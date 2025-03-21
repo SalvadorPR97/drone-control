@@ -2,7 +2,6 @@ package com.salvador.droneControl.infrastructure.persistence.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.salvador.droneControl.domain.model.Orientacion;
 import jakarta.persistence.*;
 import lombok.Data;
