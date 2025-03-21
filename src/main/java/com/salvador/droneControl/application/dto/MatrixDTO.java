@@ -2,16 +2,13 @@ package com.salvador.droneControl.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
-public class NewMatrixDTO {
+public class MatrixDTO {
 
     private Long id;
     @Positive(message = "El valor del eje X debe ser positivo")
@@ -23,6 +20,7 @@ public class NewMatrixDTO {
     public Long getId() {
         return id;
     }
+
     @JsonIgnore
     public void setId(Long id) {
         this.id = id;

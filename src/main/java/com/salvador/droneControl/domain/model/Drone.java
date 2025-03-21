@@ -1,8 +1,9 @@
 package com.salvador.droneControl.domain.model;
 
 
-import jakarta.persistence.*;
-import lombok.*;
+import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -14,4 +15,5 @@ public class Drone {
     private int x;
     private int y;
     private Orientacion orientacion;
+    private Long matriz_id;
 }

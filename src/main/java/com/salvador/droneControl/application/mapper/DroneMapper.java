@@ -1,27 +1,36 @@
 package com.salvador.droneControl.application.mapper;
 
+import com.salvador.droneControl.application.dto.DroneDTO;
+import com.salvador.droneControl.application.service.MatrixService;
 import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
+import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class DroneMapper {
 
     private final ModelMapper modelMapper;
+    private final MatrixService matrixService;
 
     @Autowired
-    public DroneMapper(ModelMapper modelMapper) {
+    public DroneMapper(ModelMapper modelMapper, MatrixService matrixService) {
         this.modelMapper = modelMapper;
+        this.matrixService = matrixService;
     }
 
-    public Drone mapToDrone(DroneEntity droneEntity) {
-        return modelMapper.map(droneEntity, Drone.class);
+    public DroneDTO mapToDTO(DroneEntity droneEntity) {
+        DroneDTO droneDTO = modelMapper.map(droneEntity, DroneDTO.class);
+        if (droneEntity.getMatriz() != null) {
+            droneDTO.setMatriz_id(droneEntity.getMatriz().getId());
+        }
+        return droneDTO;
     }
 
-    public DroneEntity mapToDroneEntity(Drone drone) {
-        return modelMapper.map(drone, DroneEntity.class);
+    // Convertir de DroneDTO a DroneEntity
+    public DroneEntity mapToEntity(DroneDTO droneDTO) {
+        return modelMapper.map(droneDTO, DroneEntity.class);
     }
 }

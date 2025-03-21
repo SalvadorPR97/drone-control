@@ -1,7 +1,7 @@
 package com.salvador.droneControl.application.service;
 
-import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
+import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import com.salvador.droneControl.infrastructure.persistence.repository.DroneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,11 @@ public class DroneService {
         this.droneRepository = droneRepository;
     }
 
-    public Optional<DroneEntity> getDroneById (long id) {
+    public Optional<DroneEntity> getDroneById(long id) {
         return droneRepository.findById(id);
+    }
+
+    public DroneEntity saveDroneEntity(DroneEntity droneEntity) {
+        return droneRepository.save(droneEntity);
     }
 }

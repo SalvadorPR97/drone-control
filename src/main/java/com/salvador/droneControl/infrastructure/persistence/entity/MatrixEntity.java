@@ -1,13 +1,11 @@
 package com.salvador.droneControl.infrastructure.persistence.entity;
 
 
-import com.salvador.droneControl.domain.model.Drone;
-import com.salvador.droneControl.domain.model.Orientacion;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -25,6 +23,7 @@ public class MatrixEntity {
     @Column(nullable = false)
     private int max_y;
 
-    @OneToMany(mappedBy = "matriz")
+    @OneToMany(mappedBy = "matriz", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<DroneEntity> drones;
 }
