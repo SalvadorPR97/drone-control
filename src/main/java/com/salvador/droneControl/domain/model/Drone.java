@@ -1,7 +1,6 @@
 package com.salvador.droneControl.domain.model;
 
 
-import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

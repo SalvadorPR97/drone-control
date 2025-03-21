@@ -2,9 +2,7 @@ package com.salvador.droneControl.application.mapper;
 
 import com.salvador.droneControl.application.dto.DroneDTO;
 import com.salvador.droneControl.application.service.MatrixService;
-import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
-import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

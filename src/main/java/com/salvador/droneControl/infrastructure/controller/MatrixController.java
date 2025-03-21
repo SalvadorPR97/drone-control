@@ -24,16 +24,15 @@ public class MatrixController {
     private final MatrixMapper matrixMapper;
 
     @Autowired
-    public MatrixController(MatrixRepository matrixRepository, MatrixService matrixService, MatrixMapper matrixMapper) {
+    public MatrixController(MatrixService matrixService, MatrixMapper matrixMapper) {
         this.matrixService = matrixService;
         this.matrixMapper = matrixMapper;
     }
 
-    @GetMapping("/getMatrix/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<?> getMatrixById(@PathVariable long id) {
         Optional<MatrixEntity> matrixEntity = matrixService.getMatrixEntityById((int) id);
         if (matrixEntity.isPresent()) {
-
             return new ResponseEntity<>(matrixEntity.get(), HttpStatus.OK);
         } else {
             Map<String, String> errorResponse = new HashMap<>();
@@ -44,7 +43,7 @@ public class MatrixController {
         }
     }
 
-    @PostMapping("/newMatrix")
+    @PostMapping("/new")
     public ResponseEntity<MatrixDTO> newMatrix(@RequestBody @Valid MatrixDTO matrixDTO) {
         Matrix matrix = new Matrix();
         matrix.setMax_x(matrixDTO.getMax_x());
@@ -55,6 +54,7 @@ public class MatrixController {
         return new ResponseEntity<>(matrixDTO, HttpStatus.CREATED);
     }
 
+    // TODO evitar que se pueda modificar si tiene algún dron fuera del rango nuevo
     @PatchMapping("/update/{id}")
     public ResponseEntity<MatrixDTO> updateMatrix(@PathVariable long id, @RequestBody @Valid MatrixDTO matrixDTO) {
         Optional<MatrixEntity> oldMatrixEntity = matrixService.getMatrixEntityById(id);
