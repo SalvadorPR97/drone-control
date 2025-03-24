@@ -1,6 +1,7 @@
 package com.salvador.droneControl.application.mapper;
 
 import com.salvador.droneControl.application.dto.DroneDTO;
+import com.salvador.droneControl.application.dto.DroneEntradaDTO;
 import com.salvador.droneControl.application.service.MatrixService;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
 import org.modelmapper.ModelMapper;
@@ -31,4 +32,6 @@ public class DroneMapper {
     public DroneEntity mapToEntity(DroneDTO droneDTO) {
         return modelMapper.map(droneDTO, DroneEntity.class);
     }
+
+    public DroneEntity mapEntradaDTOToEntity(DroneEntradaDTO droneEntradaDTO) {return modelMapper.map(droneEntradaDTO, DroneEntity.class);}
 }

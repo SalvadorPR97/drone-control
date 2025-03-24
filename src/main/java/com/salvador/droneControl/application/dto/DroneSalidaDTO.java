@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DroneDTO {
+public class DroneSalidaDTO {
 
-    @JsonIgnore
     private long id;
     @NotBlank
     private String nombre;
@@ -23,17 +22,4 @@ public class DroneDTO {
     private int y;
     @Pattern(regexp = "[NSEO]", message = "Orientación inválida")
     private String orientacion;
-    // TODO Añadir validador que compruebe que la matriz existe
-    @PositiveOrZero(message = "El valor debe ser positivo")
-    private Long matriz_id;
-
-    /*@JsonProperty
-    public Long getId() {
-        return id;
-    }
-
-    @JsonIgnore
-    public void setId(Long id) {
-        this.id = id;
-    }*/
 }

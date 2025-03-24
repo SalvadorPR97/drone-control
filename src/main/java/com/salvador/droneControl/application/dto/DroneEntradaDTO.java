@@ -1,6 +1,7 @@
 package com.salvador.droneControl.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.salvador.droneControl.domain.model.Movimientos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -9,9 +10,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DroneDTO {
+public class DroneEntradaDTO {
 
-    @JsonIgnore
     private long id;
     @NotBlank
     private String nombre;
@@ -23,17 +23,6 @@ public class DroneDTO {
     private int y;
     @Pattern(regexp = "[NSEO]", message = "Orientación inválida")
     private String orientacion;
-    // TODO Añadir validador que compruebe que la matriz existe
-    @PositiveOrZero(message = "El valor debe ser positivo")
-    private Long matriz_id;
+    private Movimientos[] orden;
 
-    /*@JsonProperty
-    public Long getId() {
-        return id;
-    }
-
-    @JsonIgnore
-    public void setId(Long id) {
-        this.id = id;
-    }*/
 }
