@@ -25,15 +25,5 @@ public class DroneDTO {
     private String orientacion;
     // TODO Añadir validador que compruebe que la matriz existe
     @PositiveOrZero(message = "El valor debe ser positivo")
-    private Long matriz_id;
-
-    /*@JsonProperty
-    public Long getId() {
-        return id;
-    }
-
-    @JsonIgnore
-    public void setId(Long id) {
-        this.id = id;
-    }*/
+    private Long matrizId;
 }

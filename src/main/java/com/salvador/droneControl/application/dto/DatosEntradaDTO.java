@@ -1,6 +1,5 @@
 package com.salvador.droneControl.application.dto;
 
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface DroneRepository extends JpaRepository<DroneEntity, Long> {
-    @Query("SELECT d FROM DroneEntity d WHERE d.matriz.id = :matriz_id AND d.x = :x AND d.y = :y")
-    Optional<DroneEntity> findByCoordinates(@Param("matriz_id") long matriz_id, @Param("x") int x, @Param("y") int y);
+    @Query("SELECT d FROM DroneEntity d WHERE d.matriz.id = :matrizId AND d.x = :x AND d.y = :y")
+    Optional<DroneEntity> findByCoordinates(@Param("matrizId") long matrizId, @Param("x") int x, @Param("y") int y);
 }

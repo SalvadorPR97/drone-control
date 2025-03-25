@@ -1,6 +1,5 @@
 package com.salvador.droneControl.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.salvador.droneControl.domain.model.Movimientos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

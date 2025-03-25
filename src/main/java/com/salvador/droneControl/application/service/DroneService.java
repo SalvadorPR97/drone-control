@@ -1,6 +1,5 @@
 package com.salvador.droneControl.application.service;
 
-import com.salvador.droneControl.application.dto.DroneCoordinatesDTO;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
 import com.salvador.droneControl.infrastructure.persistence.repository.DroneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,9 @@ public class DroneService {
         return droneEntity;
     }
 
-    public Optional<DroneEntity> getDroneEntityByCoordinates(long matriz_id, int x, int y) {
+    public Optional<DroneEntity> getDroneEntityByCoordinates(long matrizId, int x, int y) {
 
-        return droneRepository.findByCoordinates(matriz_id, x, y);
+        return droneRepository.findByCoordinates(matrizId, x, y);
     }
 
 }
