@@ -20,9 +20,9 @@ import java.util.Optional;
 @RequestMapping("/matrix")
 public class MatrixController {
 
+    private static final Logger logger = LoggerFactory.getLogger(MatrixController.class);
     private final MatrixService matrixService;
     private final MatrixMapper matrixMapper;
-    private static final Logger logger = LoggerFactory.getLogger(MatrixController.class);
 
     @Autowired
     public MatrixController(MatrixService matrixService, MatrixMapper matrixMapper) {

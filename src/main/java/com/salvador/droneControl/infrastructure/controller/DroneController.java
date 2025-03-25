@@ -6,6 +6,8 @@ import com.salvador.droneControl.application.service.DroneService;
 import com.salvador.droneControl.application.service.MatrixService;
 import com.salvador.droneControl.domain.model.Movimientos;
 import com.salvador.droneControl.domain.model.Orientacion;
+import com.salvador.droneControl.infrastructure.exception.ResourceNotFoundException;
+import com.salvador.droneControl.infrastructure.exception.WrongCoordinatesException;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
 import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import jakarta.validation.Valid;
@@ -16,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,10 +26,10 @@ import java.util.Optional;
 @RequestMapping("/drone")
 public class DroneController {
 
+    private static final Logger logger = LoggerFactory.getLogger(DroneController.class);
     private final DroneService droneService;
     private final DroneMapper droneMapper;
     private final MatrixService matrixService;
-    private static final Logger logger = LoggerFactory.getLogger(DroneController.class);
 
     @Autowired
     public DroneController(DroneService droneService, DroneMapper droneMapper, MatrixService matrixService) {
@@ -38,43 +39,37 @@ public class DroneController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<?> newDrone(@RequestBody @Valid DroneDTO droneDTO) {
+    public ResponseEntity<DroneDTO> newDrone(@RequestBody @Valid DroneDTO droneDTO) {
         logger.info("Creando dron");
         DroneEntity droneEntity = droneMapper.mapToEntity(droneDTO);
         Optional<MatrixEntity> optMatrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
         if (optMatrixEntity.isPresent()) {
             MatrixEntity matrixEntity = optMatrixEntity.get();
-            ResponseEntity<?> checkCoordinatesOutOfMatrix = coordinatesOutOfMatrix(droneDTO, matrixEntity);
-            if (checkCoordinatesOutOfMatrix != null) {
-                return checkCoordinatesOutOfMatrix;
-            }
-            ResponseEntity<?> checkCoordinatesBusy = coordinatesBusy(droneDTO, matrixEntity);
-            if (checkCoordinatesBusy != null) {
-                return checkCoordinatesBusy;
-            }
+
+            //Comprobamos que el dron que creamos esté dentro de la matriz y que no esté en las mismas coordenadas
+            //que otro dron
+            coordinatesOutOfMatrix(droneDTO, matrixEntity);
+            coordinatesBusy(droneDTO, matrixEntity);
 
             droneEntity.setMatriz(matrixEntity);
             DroneEntity createdDroneEntity = droneService.saveDroneEntity(droneEntity);
             droneDTO.setId(createdDroneEntity.getId());
             return new ResponseEntity<>(droneDTO, HttpStatus.CREATED);
         } else {
-            logger.error("La matriz no existe");
-            return ResponseEntity.notFound().build();
+            logger.error("Matriz no encontrada con id: {}", droneDTO.getMatrizId());
+            throw new ResourceNotFoundException("Matriz no encontrada con id: " + droneDTO.getMatrizId());
         }
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<?> updateDrone(@RequestBody @Valid DroneDTO droneDTO, @PathVariable Long id) {
+    public ResponseEntity<DroneEntity> updateDrone(@RequestBody @Valid DroneDTO droneDTO, @PathVariable Long id) {
         logger.info("Actualizando dron");
         Optional<DroneEntity> optOldDroneEntity = droneService.getDroneById(id);
         Optional<MatrixEntity> optMatrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
         if (optOldDroneEntity.isPresent() && optMatrixEntity.isPresent()) {
             logger.info("Dron y matriz existen");
             MatrixEntity matrixEntity = optMatrixEntity.get();
-            ResponseEntity<?> checkCoordinatesOutOfMatrix = coordinatesOutOfMatrix(droneDTO, matrixEntity);
-            if (checkCoordinatesOutOfMatrix != null) {
-                return checkCoordinatesOutOfMatrix;
-            }
+            coordinatesOutOfMatrix(droneDTO, matrixEntity);
 
             DroneEntity oldDroneEntity = optOldDroneEntity.get();
             oldDroneEntity.setNombre(droneDTO.getNombre());
@@ -87,8 +82,8 @@ public class DroneController {
             droneService.saveDroneEntity(oldDroneEntity);
             return new ResponseEntity<>(oldDroneEntity, HttpStatus.OK);
         }
-        logger.info("Matriz o dron no existentes");
-        return ResponseEntity.notFound().build();
+        logger.error("Dron no existente");
+        throw new ResourceNotFoundException("Drone no encontrado con id: " + id);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -101,43 +96,42 @@ public class DroneController {
             return new ResponseEntity<>(deletedDrone, HttpStatus.OK);
         } else {
             logger.error("El dron no existe");
-            return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("Drone no encontrado con id: " + id);
         }
     }
 
     @PostMapping("/findByCoordinates")
-    public ResponseEntity<?> findByCoordinates(@RequestBody @Valid DroneCoordinatesDTO droneCoordinatesDTO) {
+    public ResponseEntity<DroneEntity> findByCoordinates(@RequestBody @Valid DroneCoordinatesDTO droneCoordinatesDTO) {
         logger.info("Buscando dron por coordenadas x={} y={}", droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
         Optional<DroneEntity> droneEntity = droneService.getDroneEntityByCoordinates(
                 droneCoordinatesDTO.getMatriz_id(), droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
         if (droneEntity.isPresent()) {
-            return new ResponseEntity<>(droneEntity, HttpStatus.OK);
+            return new ResponseEntity<>(droneEntity.get(), HttpStatus.OK);
         } else {
             logger.error("El dron no existe");
-            return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("Drone no encontrado en la matriz en las coordenadas x=" + droneCoordinatesDTO.getX() + ", y=" + droneCoordinatesDTO.getY());
         }
     }
 
     @PostMapping("/move")
-    public ResponseEntity<?> moveOne(@RequestBody @Valid DroneMoveDTO droneMoveDTO) {
+    public ResponseEntity<MatrixEntity> moveOne(@RequestBody @Valid DroneMoveDTO droneMoveDTO) {
         logger.info("Moviendo dron con id: {}", droneMoveDTO.getId());
         Optional<DroneEntity> droneEntity = droneService.getDroneById(droneMoveDTO.getId());
         Optional<MatrixEntity> matrixEntity = matrixService.getMatrixEntityById(droneMoveDTO.getMatrizId());
         if (droneEntity.isPresent() && matrixEntity.isPresent()) {
             DroneEntity drone = droneEntity.get();
 
-            ResponseEntity<?> ordenesCorrectas = executeOrders(droneMoveDTO.getOrden(), drone, matrixEntity.get());
-            if (ordenesCorrectas != null) {
-                return new ResponseEntity<>(ordenesCorrectas, HttpStatus.OK);
-            }
+            executeOrders(droneMoveDTO.getOrden(), drone, matrixEntity.get());
             return new ResponseEntity<>(matrixEntity.get(), HttpStatus.OK);
         } else {
-            return ResponseEntity.notFound().build();
+            logger.error("Dron o matriz no existente");
+            throw new ResourceNotFoundException("Drone no encontrado con id: " + droneMoveDTO.getId() +
+                    " o matriz no encontrada con id: " + droneMoveDTO.getMatrizId());
         }
     }
 
     @PostMapping("/moveManyInMatrix/{id}")
-    public ResponseEntity<?> moveMany(@RequestBody @Valid DatosEntradaDTO datosEntradaDTO, @PathVariable Long id) {
+    public ResponseEntity<MatrixEntity> moveMany(@RequestBody @Valid DatosEntradaDTO datosEntradaDTO, @PathVariable Long id) {
         logger.info("Moviendo varios drones");
         Optional<MatrixEntity> matrixEntity = matrixService.getMatrixEntityById(id);
         if (matrixEntity.isPresent()) {
@@ -145,55 +139,42 @@ public class DroneController {
             for (DroneEntradaDTO drone : datosEntradaDTO.getDrones()) {
                 DroneEntity droneEntity = droneMapper.mapEntradaDTOToEntity(drone);
                 droneEntity.setMatriz(matrixEntity.get());
-                ResponseEntity<?> ordenesCorrectas = executeOrders(drone.getOrden(), droneEntity, matrixEntity.get());
-                if (ordenesCorrectas != null) {
-                    return new ResponseEntity<>(ordenesCorrectas, HttpStatus.OK);
-                }
+                executeOrders(drone.getOrden(), droneEntity, matrixEntity.get());
             }
 
             return new ResponseEntity<>(matrixEntity.get(), HttpStatus.OK);
         } else {
-            return ResponseEntity.notFound().build();
+            logger.error("Dron o matriz no existente");
+            throw new ResourceNotFoundException("Matriz no encontrada con id: " + id);
         }
     }
 
 
     // Métodos auxiliares
-    private ResponseEntity<Map<String,String>> coordinatesOutOfMatrix(DroneDTO droneDTO, MatrixEntity matrixEntity) {
+    private void coordinatesOutOfMatrix(DroneDTO droneDTO, MatrixEntity matrixEntity) {
         if (droneDTO.getX() > matrixEntity.getMax_x() || droneDTO.getY() > matrixEntity.getMax_y()) {
-            Map<String, String> errorResponse = new HashMap<>();
             String errorMessage = "La coordenada excede el límite de la matriz";
-            errorResponse.put("error", "Coordenada no encontrada");
-            errorResponse.put("message", errorMessage);
             logger.error(errorMessage);
-            return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+            throw new WrongCoordinatesException(errorMessage);
         }
-        return null;
     }
 
-    private ResponseEntity<Map<String,String>> coordinatesBusy(DroneDTO droneDTO, MatrixEntity matrixEntity) {
+    private void coordinatesBusy(DroneDTO droneDTO, MatrixEntity matrixEntity) {
         List<DroneEntity> drones = matrixEntity.getDrones();
         for (DroneEntity drone : drones) {
             if (drone.getX() == droneDTO.getX() && drone.getY() == droneDTO.getY()) {
-                Map<String, String> errorResponse = new HashMap<>();
                 String errorMessage = "Coordenadas ocupadas por el dron con el ID " + drone.getId();
-                errorResponse.put("error", "Coordenada ocupada");
-                errorResponse.put("message", errorMessage);
                 logger.error(errorMessage);
-                return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+                throw new WrongCoordinatesException(errorMessage);
             }
         }
-        return null;
     }
 
-    private ResponseEntity<?> executeOrders(Movimientos[] ordenes, DroneEntity drone, MatrixEntity matrixEntity) {
+    private void executeOrders(Movimientos[] ordenes, DroneEntity drone, MatrixEntity matrixEntity) {
         for (Movimientos orden : ordenes) {
             switch (orden) {
                 case MOVE_FORWARD:
-                    ResponseEntity<?> moveResponse = moveForward(drone, matrixEntity);
-                    if (moveResponse != null) {
-                        return moveResponse;
-                    }
+                    moveForward(drone, matrixEntity);
                     break;
                 case TURN_LEFT:
                     switch (drone.getOrientacion()) {
@@ -230,11 +211,9 @@ public class DroneController {
             }
             droneService.saveDroneEntity(drone);
         }
-
-        return null;
     }
 
-    public ResponseEntity<Map<String,String>> moveForward(DroneEntity drone, MatrixEntity matrixEntity) {
+    public void moveForward(DroneEntity drone, MatrixEntity matrixEntity) {
         switch (drone.getOrientacion()) {
             case Orientacion.N:
                 drone.setY(drone.getY() + 1);
@@ -249,14 +228,7 @@ public class DroneController {
                 drone.setX(drone.getX() - 1);
                 break;
         }
-        ResponseEntity<Map<String,String>> collision = coordinatesBusy(droneMapper.mapToDTO(drone), matrixEntity);
-        if (collision != null) {
-            return collision;
-        }
-        ResponseEntity<Map<String,String>> checkCoordinatesOutOfMatrix = coordinatesOutOfMatrix(droneMapper.mapToDTO(drone), matrixEntity);
-        if (checkCoordinatesOutOfMatrix != null) {
-            return checkCoordinatesOutOfMatrix;
-        }
-        return null;
+        coordinatesBusy(droneMapper.mapToDTO(drone), matrixEntity);
+        coordinatesOutOfMatrix(droneMapper.mapToDTO(drone), matrixEntity);
     }
 }
