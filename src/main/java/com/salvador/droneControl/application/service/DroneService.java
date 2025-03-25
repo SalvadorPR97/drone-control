@@ -1,11 +1,10 @@
 package com.salvador.droneControl.application.service;
 
+import com.salvador.droneControl.infrastructure.exception.ResourceNotFoundException;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
 import com.salvador.droneControl.infrastructure.persistence.repository.DroneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class DroneService {
@@ -17,8 +16,8 @@ public class DroneService {
         this.droneRepository = droneRepository;
     }
 
-    public Optional<DroneEntity> getDroneById(long id) {
-        return droneRepository.findById(id);
+    public DroneEntity getDroneEntityById(long id) {
+        return droneRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Drone no encontrado con id: " + id));
     }
 
     public DroneEntity saveDroneEntity(DroneEntity droneEntity) {
@@ -30,9 +29,11 @@ public class DroneService {
         return droneEntity;
     }
 
-    public Optional<DroneEntity> getDroneEntityByCoordinates(long matrizId, int x, int y) {
+    public DroneEntity getDroneEntityByCoordinates(long matrizId, int x, int y) {
 
-        return droneRepository.findByCoordinates(matrizId, x, y);
+        return droneRepository.findByCoordinates(matrizId, x, y).orElseThrow(() ->
+                new ResourceNotFoundException("Drone no encontrado en la matriz en las coordenadas x= " +
+                        x + ", y= " + y));
     }
 
 }

@@ -6,7 +6,6 @@ import com.salvador.droneControl.application.service.DroneService;
 import com.salvador.droneControl.application.service.MatrixService;
 import com.salvador.droneControl.domain.model.Movimientos;
 import com.salvador.droneControl.domain.model.Orientacion;
-import com.salvador.droneControl.infrastructure.exception.ResourceNotFoundException;
 import com.salvador.droneControl.infrastructure.exception.WrongCoordinatesException;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
 import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
@@ -19,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/drone")
@@ -42,111 +39,78 @@ public class DroneController {
     public ResponseEntity<DroneDTO> newDrone(@RequestBody @Valid DroneDTO droneDTO) {
         logger.info("Creando dron");
         DroneEntity droneEntity = droneMapper.mapToEntity(droneDTO);
-        Optional<MatrixEntity> optMatrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
-        if (optMatrixEntity.isPresent()) {
-            MatrixEntity matrixEntity = optMatrixEntity.get();
+        MatrixEntity matrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
 
-            //Comprobamos que el dron que creamos esté dentro de la matriz y que no esté en las mismas coordenadas
-            //que otro dron
-            coordinatesOutOfMatrix(droneDTO, matrixEntity);
-            coordinatesBusy(droneDTO, matrixEntity);
+        //Comprobamos que el dron que creamos esté dentro de la matriz y que no esté en las mismas coordenadas
+        //que otro dron
+        coordinatesOutOfMatrix(droneDTO, matrixEntity);
+        coordinatesBusy(droneDTO, matrixEntity);
 
-            droneEntity.setMatriz(matrixEntity);
-            DroneEntity createdDroneEntity = droneService.saveDroneEntity(droneEntity);
-            droneDTO.setId(createdDroneEntity.getId());
-            return new ResponseEntity<>(droneDTO, HttpStatus.CREATED);
-        } else {
-            logger.error("Matriz no encontrada con id: {}", droneDTO.getMatrizId());
-            throw new ResourceNotFoundException("Matriz no encontrada con id: " + droneDTO.getMatrizId());
-        }
+        droneEntity.setMatriz(matrixEntity);
+        DroneEntity createdDroneEntity = droneService.saveDroneEntity(droneEntity);
+        droneDTO.setId(createdDroneEntity.getId());
+        return new ResponseEntity<>(droneDTO, HttpStatus.CREATED);
+
     }
 
     @PatchMapping("/update/{id}")
     public ResponseEntity<DroneEntity> updateDrone(@RequestBody @Valid DroneDTO droneDTO, @PathVariable Long id) {
         logger.info("Actualizando dron");
-        Optional<DroneEntity> optOldDroneEntity = droneService.getDroneById(id);
-        Optional<MatrixEntity> optMatrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
-        if (optOldDroneEntity.isPresent() && optMatrixEntity.isPresent()) {
-            logger.info("Dron y matriz existen");
-            MatrixEntity matrixEntity = optMatrixEntity.get();
-            coordinatesOutOfMatrix(droneDTO, matrixEntity);
+        DroneEntity oldDroneEntity = droneService.getDroneEntityById(id);
+        MatrixEntity matrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
 
-            DroneEntity oldDroneEntity = optOldDroneEntity.get();
-            oldDroneEntity.setNombre(droneDTO.getNombre());
-            oldDroneEntity.setModelo(droneDTO.getModelo());
-            oldDroneEntity.setX(droneDTO.getX());
-            oldDroneEntity.setY(droneDTO.getY());
-            oldDroneEntity.setOrientacion(Orientacion.valueOf(droneDTO.getOrientacion()));
-            oldDroneEntity.setMatriz(matrixEntity);
+        coordinatesOutOfMatrix(droneDTO, matrixEntity);
 
-            droneService.saveDroneEntity(oldDroneEntity);
-            return new ResponseEntity<>(oldDroneEntity, HttpStatus.OK);
-        }
-        logger.error("Dron no existente");
-        throw new ResourceNotFoundException("Drone no encontrado con id: " + id);
+        oldDroneEntity.setNombre(droneDTO.getNombre());
+        oldDroneEntity.setModelo(droneDTO.getModelo());
+        oldDroneEntity.setX(droneDTO.getX());
+        oldDroneEntity.setY(droneDTO.getY());
+        oldDroneEntity.setOrientacion(Orientacion.valueOf(droneDTO.getOrientacion()));
+        oldDroneEntity.setMatriz(matrixEntity);
+
+        droneService.saveDroneEntity(oldDroneEntity);
+        return new ResponseEntity<>(oldDroneEntity, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<DroneEntity> deleteDrone(@PathVariable Long id) {
         logger.info("Borrando dron");
-        Optional<DroneEntity> optDroneEntity = droneService.getDroneById(id);
-        if (optDroneEntity.isPresent()) {
-            DroneEntity droneEntity = optDroneEntity.get();
-            DroneEntity deletedDrone = droneService.deleteDroneEntity(droneEntity);
-            return new ResponseEntity<>(deletedDrone, HttpStatus.OK);
-        } else {
-            logger.error("El dron no existe");
-            throw new ResourceNotFoundException("Drone no encontrado con id: " + id);
-        }
+        DroneEntity droneEntity = droneService.getDroneEntityById(id);
+        DroneEntity deletedDrone = droneService.deleteDroneEntity(droneEntity);
+        return new ResponseEntity<>(deletedDrone, HttpStatus.OK);
+
     }
 
     @PostMapping("/findByCoordinates")
     public ResponseEntity<DroneEntity> findByCoordinates(@RequestBody @Valid DroneCoordinatesDTO droneCoordinatesDTO) {
         logger.info("Buscando dron por coordenadas x={} y={}", droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
-        Optional<DroneEntity> droneEntity = droneService.getDroneEntityByCoordinates(
+        DroneEntity droneEntity = droneService.getDroneEntityByCoordinates(
                 droneCoordinatesDTO.getMatriz_id(), droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
-        if (droneEntity.isPresent()) {
-            return new ResponseEntity<>(droneEntity.get(), HttpStatus.OK);
-        } else {
-            logger.error("El dron no existe");
-            throw new ResourceNotFoundException("Drone no encontrado en la matriz en las coordenadas x=" + droneCoordinatesDTO.getX() + ", y=" + droneCoordinatesDTO.getY());
-        }
+        return new ResponseEntity<>(droneEntity, HttpStatus.OK);
     }
 
     @PostMapping("/move")
     public ResponseEntity<MatrixEntity> moveOne(@RequestBody @Valid DroneMoveDTO droneMoveDTO) {
         logger.info("Moviendo dron con id: {}", droneMoveDTO.getId());
-        Optional<DroneEntity> droneEntity = droneService.getDroneById(droneMoveDTO.getId());
-        Optional<MatrixEntity> matrixEntity = matrixService.getMatrixEntityById(droneMoveDTO.getMatrizId());
-        if (droneEntity.isPresent() && matrixEntity.isPresent()) {
-            DroneEntity drone = droneEntity.get();
+        DroneEntity droneEntity = droneService.getDroneEntityById(droneMoveDTO.getId());
+        MatrixEntity matrixEntity = matrixService.getMatrixEntityById(droneMoveDTO.getMatrizId());
 
-            executeOrders(droneMoveDTO.getOrden(), drone, matrixEntity.get());
-            return new ResponseEntity<>(matrixEntity.get(), HttpStatus.OK);
-        } else {
-            logger.error("Dron o matriz no existente");
-            throw new ResourceNotFoundException("Drone no encontrado con id: " + droneMoveDTO.getId() +
-                    " o matriz no encontrada con id: " + droneMoveDTO.getMatrizId());
-        }
+        executeOrders(droneMoveDTO.getOrden(), droneEntity, matrixEntity);
+        return new ResponseEntity<>(matrixEntity, HttpStatus.OK);
+
     }
 
     @PostMapping("/moveManyInMatrix/{id}")
     public ResponseEntity<MatrixEntity> moveMany(@RequestBody @Valid DatosEntradaDTO datosEntradaDTO, @PathVariable Long id) {
         logger.info("Moviendo varios drones");
-        Optional<MatrixEntity> matrixEntity = matrixService.getMatrixEntityById(id);
-        if (matrixEntity.isPresent()) {
-
-            for (DroneEntradaDTO drone : datosEntradaDTO.getDrones()) {
-                DroneEntity droneEntity = droneMapper.mapEntradaDTOToEntity(drone);
-                droneEntity.setMatriz(matrixEntity.get());
-                executeOrders(drone.getOrden(), droneEntity, matrixEntity.get());
-            }
-
-            return new ResponseEntity<>(matrixEntity.get(), HttpStatus.OK);
-        } else {
-            logger.error("Dron o matriz no existente");
-            throw new ResourceNotFoundException("Matriz no encontrada con id: " + id);
+        MatrixEntity matrixEntity = matrixService.getMatrixEntityById(id);
+        for (DroneEntradaDTO drone : datosEntradaDTO.getDrones()) {
+            DroneEntity droneEntity = droneMapper.mapEntradaDTOToEntity(drone);
+            droneEntity.setMatriz(matrixEntity);
+            executeOrders(drone.getOrden(), droneEntity, matrixEntity);
         }
+        return new ResponseEntity<>(matrixEntity, HttpStatus.OK);
+
     }
 
 
@@ -177,36 +141,10 @@ public class DroneController {
                     moveForward(drone, matrixEntity);
                     break;
                 case TURN_LEFT:
-                    switch (drone.getOrientacion()) {
-                        case Orientacion.N:
-                            drone.setOrientacion(Orientacion.O);
-                            break;
-                        case Orientacion.S:
-                            drone.setOrientacion(Orientacion.E);
-                            break;
-                        case Orientacion.E:
-                            drone.setOrientacion(Orientacion.N);
-                            break;
-                        case Orientacion.O:
-                            drone.setOrientacion(Orientacion.S);
-                            break;
-                    }
+                    drone.setOrientacion(drone.getOrientacion().turnLeft());
                     break;
                 case TURN_RIGHT:
-                    switch (drone.getOrientacion()) {
-                        case Orientacion.N:
-                            drone.setOrientacion(Orientacion.E);
-                            break;
-                        case Orientacion.S:
-                            drone.setOrientacion(Orientacion.O);
-                            break;
-                        case Orientacion.E:
-                            drone.setOrientacion(Orientacion.S);
-                            break;
-                        case Orientacion.O:
-                            drone.setOrientacion(Orientacion.N);
-                            break;
-                    }
+                    drone.setOrientacion(drone.getOrientacion().turnRight());
                     break;
             }
             droneService.saveDroneEntity(drone);
