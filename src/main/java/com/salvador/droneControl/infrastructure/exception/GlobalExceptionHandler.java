@@ -1,5 +1,6 @@
 package com.salvador.droneControl.infrastructure.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -41,5 +42,11 @@ public class GlobalExceptionHandler {
             errors.put(ERROR_KEY, error.getDefaultMessage());
         }
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put(ERROR_KEY, "No se puede eliminar la matriz porque tiene drones asociados.");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

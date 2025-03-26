@@ -54,6 +54,12 @@ public class MatrixService {
         return this.saveMatrixEntity(oldMatrixEntity);
     }
 
+    public MatrixEntity deleteMatrixById(Long id) {
+        MatrixEntity matrixEntity = this.getMatrixEntityById(id);
+        matrixRepository.deleteById(id);
+        return matrixEntity;
+    }
+
     private void droneOutOfMatrix(DroneEntity drone, MatrixEntity matrixEntity) {
         if (drone.getX() > matrixEntity.getMax_x() || drone.getY() > matrixEntity.getMax_y()) {
             String errorMessage = "Quedarían drones fuera de la nueva matriz";

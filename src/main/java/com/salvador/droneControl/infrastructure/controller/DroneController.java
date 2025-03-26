@@ -46,7 +46,6 @@ public class DroneController {
         logger.info("Borrando dron");
         DroneEntity deletedDrone = droneService.deleteDroneEntityById(id);
         return new ResponseEntity<>(deletedDrone, HttpStatus.OK);
-
     }
 
     @PostMapping("/findByCoordinates")
@@ -62,7 +61,6 @@ public class DroneController {
         logger.info("Moviendo dron con id: {}", droneMoveDTO.getId());
         MatrixEntity matrizResultante = droneService.moveOneDrone(droneMoveDTO);
         return new ResponseEntity<>(matrizResultante, HttpStatus.OK);
-
     }
 
     @PostMapping("/moveManyInMatrix/{id}")
@@ -70,7 +68,6 @@ public class DroneController {
         logger.info("Moviendo varios drones");
         MatrixEntity matrixEntity = droneService.moveManyInMatrix(datosEntradaDTO, id);
         return new ResponseEntity<>(matrixEntity, HttpStatus.OK);
-
     }
 
 }

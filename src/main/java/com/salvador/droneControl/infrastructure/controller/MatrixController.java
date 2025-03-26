@@ -43,7 +43,13 @@ public class MatrixController {
         logger.info("Actualizando matriz");
         MatrixEntity updatedMatrix = matrixService.updateMatrix(matrixDTO);
         return new ResponseEntity<>(updatedMatrix, HttpStatus.OK);
+    }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<MatrixEntity> deleteDrone(@PathVariable Long id) {
+        logger.info("Borrando matriz...");
+        MatrixEntity deletedMatrix = matrixService.deleteMatrixById(id);
+        return new ResponseEntity<>(deletedMatrix, HttpStatus.OK);
     }
 
 
