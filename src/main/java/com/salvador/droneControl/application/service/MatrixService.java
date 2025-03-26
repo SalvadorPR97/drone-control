@@ -1,7 +1,7 @@
 package com.salvador.droneControl.application.service;
 
 import com.salvador.droneControl.application.dto.MatrixDTO;
-import com.salvador.droneControl.application.dto.NewMatrixDTO;
+import com.salvador.droneControl.application.dto.MatrixEntradaDTO;
 import com.salvador.droneControl.application.mapper.MatrixMapper;
 import com.salvador.droneControl.infrastructure.exception.ResourceNotFoundException;
 import com.salvador.droneControl.infrastructure.exception.WrongCoordinatesException;
@@ -34,20 +34,20 @@ public class MatrixService {
         return matrixRepository.save(matrixEntity);
     }
 
-    public MatrixDTO createMatrix(NewMatrixDTO newMatrixDTO) {
+    public MatrixDTO createMatrix(MatrixEntradaDTO matrixEntradaDTO) {
         MatrixDTO matrix = new MatrixDTO();
-        matrix.setMax_x(newMatrixDTO.getMax_x());
-        matrix.setMax_y(newMatrixDTO.getMax_y());
+        matrix.setMax_x(matrixEntradaDTO.getMax_x());
+        matrix.setMax_y(matrixEntradaDTO.getMax_y());
         MatrixEntity insertedMatrix = this.saveMatrixEntity(matrixMapper.mapToMatrixEntity(matrix));
 
         matrix.setId(insertedMatrix.getId());
         return matrix;
     }
 
-    public MatrixEntity updateMatrix(MatrixDTO matrixDTO) {
-        MatrixEntity oldMatrixEntity = this.getMatrixEntityById(matrixDTO.getId());
-        oldMatrixEntity.setMax_x(matrixDTO.getMax_x());
-        oldMatrixEntity.setMax_y(matrixDTO.getMax_y());
+    public MatrixEntity updateMatrix(MatrixEntradaDTO matrixEntradaDTO, long id) {
+        MatrixEntity oldMatrixEntity = this.getMatrixEntityById(id);
+        oldMatrixEntity.setMax_x(matrixEntradaDTO.getMax_x());
+        oldMatrixEntity.setMax_y(matrixEntradaDTO.getMax_y());
         for (DroneEntity drone : oldMatrixEntity.getDrones()) {
             this.droneOutOfMatrix(drone, oldMatrixEntity);
         }

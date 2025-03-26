@@ -1,6 +1,7 @@
 package com.salvador.droneControl.application.dto;
 
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MatrixDTO {
 
+    @PositiveOrZero(message = "el id debe ser 0 o mayor")
     private Long id;
     @Positive(message = "El valor del eje X debe ser positivo")
     private int max_x;

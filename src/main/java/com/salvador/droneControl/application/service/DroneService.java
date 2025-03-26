@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DroneService {
@@ -50,14 +51,15 @@ public class DroneService {
     }
 
     public Drone createDrone(DroneDTO droneDTO) {
-        DroneEntity droneEntity = droneMapper.mapDroneDTOToEntity(droneDTO);
         MatrixEntity matrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
+        DroneEntity droneEntity = droneMapper.mapDroneDTOToEntity(droneDTO);
 
         //Comprobamos que el dron que creamos esté dentro de la matriz y que no esté en las mismas coordenadas
         //que otro dron
-        coordinatesOutOfMatrix(droneDTO, matrixEntity);
-        coordinatesBusy(droneDTO, matrixEntity);
+        coordinatesOutOfMatrix(droneEntity, matrixEntity);
+        coordinatesBusy(droneEntity, matrixEntity);
 
+        droneEntity.setId(null);
         droneEntity.setMatriz(matrixEntity);
         DroneEntity createdDroneEntity = this.saveDroneEntity(droneEntity);
         return droneMapper.mapDroneEntityToDrone(createdDroneEntity);
@@ -66,10 +68,9 @@ public class DroneService {
     public Drone updateDrone(DroneDTO droneDTO, long id) {
         DroneEntity oldDroneEntity = this.getDroneEntityById(id);
         MatrixEntity matrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
-        coordinatesOutOfMatrix(droneDTO, matrixEntity);
-        if (oldDroneEntity.getX() != droneDTO.getX() && oldDroneEntity.getY() != droneDTO.getY()) {
-            coordinatesBusy(droneDTO, matrixEntity);
-        }
+        coordinatesOutOfMatrix(droneMapper.mapDroneDTOToEntity(droneDTO), matrixEntity);
+        coordinatesBusy(droneMapper.mapDroneDTOToEntity(droneDTO), matrixEntity);
+
         DroneEntity mapUpdatedDroneEntity = droneMapper.mapUpdateDroneDTOToEntity(droneDTO, oldDroneEntity, matrixEntity);
         DroneEntity updatedDroneEntity = this.saveDroneEntity(mapUpdatedDroneEntity);
         return droneMapper.mapDroneEntityToDrone(updatedDroneEntity);
@@ -100,18 +101,19 @@ public class DroneService {
     }
 
     // Métodos auxiliares
-    private void coordinatesOutOfMatrix(DroneDTO droneDTO, MatrixEntity matrixEntity) {
-        if (droneDTO.getX() > matrixEntity.getMax_x() || droneDTO.getY() > matrixEntity.getMax_y()) {
+    private void coordinatesOutOfMatrix(DroneEntity droneEntity, MatrixEntity matrixEntity) {
+        if (droneEntity.getX() > matrixEntity.getMax_x() || droneEntity.getY() > matrixEntity.getMax_y() ||
+                droneEntity.getX() < 0 || droneEntity.getY() < 0) {
             String errorMessage = "La coordenada excede el límite de la matriz";
             logger.error(errorMessage);
             throw new WrongCoordinatesException(errorMessage);
         }
     }
 
-    private void coordinatesBusy(DroneDTO droneDTO, MatrixEntity matrixEntity) {
+    private void coordinatesBusy(DroneEntity droneMoving, MatrixEntity matrixEntity) {
         List<DroneEntity> drones = matrixEntity.getDrones();
         for (DroneEntity drone : drones) {
-            if (drone.getX() == droneDTO.getX() && drone.getY() == droneDTO.getY()) {
+            if (!Objects.equals(drone.getId(), droneMoving.getId()) && drone.getX() == droneMoving.getX() && drone.getY() == droneMoving.getY()) {
                 String errorMessage = "Coordenadas ocupadas por el dron con el ID " + drone.getId();
                 logger.error(errorMessage);
                 throw new WrongCoordinatesException(errorMessage);
@@ -151,7 +153,7 @@ public class DroneService {
                 drone.setX(drone.getX() - 1);
                 break;
         }
-        coordinatesBusy(droneMapper.mapDroneEntityToDTO(drone), matrixEntity);
-        coordinatesOutOfMatrix(droneMapper.mapDroneEntityToDTO(drone), matrixEntity);
+        coordinatesBusy(drone, matrixEntity);
+        coordinatesOutOfMatrix(drone, matrixEntity);
     }
 }

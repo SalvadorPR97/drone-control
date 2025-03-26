@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DroneEntradaDTO {
 
+    @PositiveOrZero(message = "El id debe ser 0 o mayor")
     private long id;
-    @NotBlank
+    @NotBlank(message = "el nombre no debe estar vacío")
     private String nombre;
-    @NotBlank
+    @NotBlank(message = "el modelo no debe estar vacío")
     private String modelo;
     @PositiveOrZero(message = "El valor del eje X debe ser positivo")
     private int x;

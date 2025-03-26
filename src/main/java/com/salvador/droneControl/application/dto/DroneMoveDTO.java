@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DroneMoveDTO {
 
-    @PositiveOrZero
+    @PositiveOrZero(message = "el id debe ser 0 o mayor")
     private long id;
     @PositiveOrZero(message = "El valor debe ser positivo")
     private Long matrizId;

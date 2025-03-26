@@ -1,7 +1,7 @@
 package com.salvador.droneControl.infrastructure.controller;
 
 import com.salvador.droneControl.application.dto.MatrixDTO;
-import com.salvador.droneControl.application.dto.NewMatrixDTO;
+import com.salvador.droneControl.application.dto.MatrixEntradaDTO;
 import com.salvador.droneControl.application.service.MatrixService;
 import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import jakarta.validation.Valid;
@@ -32,16 +32,16 @@ public class MatrixController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<MatrixDTO> newMatrix(@RequestBody @Valid NewMatrixDTO newMatrixDTO) {
+    public ResponseEntity<MatrixDTO> newMatrix(@RequestBody @Valid MatrixEntradaDTO matrixEntradaDTO) {
         logger.info("Creando matriz}");
-        MatrixDTO newMatrix = matrixService.createMatrix(newMatrixDTO);
+        MatrixDTO newMatrix = matrixService.createMatrix(matrixEntradaDTO);
         return new ResponseEntity<>(newMatrix, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/update")
-    public ResponseEntity<MatrixEntity> updateMatrix(@RequestBody @Valid MatrixDTO matrixDTO) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<MatrixEntity> updateMatrix(@RequestBody @Valid MatrixEntradaDTO matrixEntradaDTO, @PathVariable long id) {
         logger.info("Actualizando matriz");
-        MatrixEntity updatedMatrix = matrixService.updateMatrix(matrixDTO);
+        MatrixEntity updatedMatrix = matrixService.updateMatrix(matrixEntradaDTO, id);
         return new ResponseEntity<>(updatedMatrix, HttpStatus.OK);
     }
 
