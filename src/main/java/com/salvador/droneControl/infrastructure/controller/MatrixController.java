@@ -2,7 +2,6 @@ package com.salvador.droneControl.infrastructure.controller;
 
 import com.salvador.droneControl.application.dto.MatrixDTO;
 import com.salvador.droneControl.application.dto.NewMatrixDTO;
-import com.salvador.droneControl.application.mapper.MatrixMapper;
 import com.salvador.droneControl.application.service.MatrixService;
 import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import jakarta.validation.Valid;
@@ -19,12 +18,10 @@ public class MatrixController {
 
     private static final Logger logger = LoggerFactory.getLogger(MatrixController.class);
     private final MatrixService matrixService;
-    private final MatrixMapper matrixMapper;
 
     @Autowired
-    public MatrixController(MatrixService matrixService, MatrixMapper matrixMapper) {
+    public MatrixController(MatrixService matrixService) {
         this.matrixService = matrixService;
-        this.matrixMapper = matrixMapper;
     }
 
     @GetMapping("/get/{id}")
@@ -37,25 +34,17 @@ public class MatrixController {
     @PostMapping("/new")
     public ResponseEntity<MatrixDTO> newMatrix(@RequestBody @Valid NewMatrixDTO newMatrixDTO) {
         logger.info("Creando matriz}");
-        MatrixDTO matrix = new MatrixDTO();
-        matrix.setMax_x(newMatrixDTO.getMax_x());
-        matrix.setMax_y(newMatrixDTO.getMax_y());
-        MatrixEntity insertedMatrix = matrixService.saveMatrixEntity(matrixMapper.mapToMatrixEntity(matrix));
-        matrix.setId(insertedMatrix.getId());
-        return new ResponseEntity<>(matrix, HttpStatus.CREATED);
+        MatrixDTO newMatrix = matrixService.createMatrix(newMatrixDTO);
+        return new ResponseEntity<>(newMatrix, HttpStatus.CREATED);
     }
 
-    // TODO evitar que se pueda modificar si tiene algún dron fuera del rango nuevo
     @PatchMapping("/update")
-    public ResponseEntity<MatrixDTO> updateMatrix(@RequestBody @Valid MatrixDTO matrixDTO) {
+    public ResponseEntity<MatrixEntity> updateMatrix(@RequestBody @Valid MatrixDTO matrixDTO) {
         logger.info("Actualizando matriz");
-        MatrixEntity oldMatrixEntity = matrixService.getMatrixEntityById(matrixDTO.getId());
-
-        oldMatrixEntity.setMax_x(matrixDTO.getMax_x());
-        oldMatrixEntity.setMax_y(matrixDTO.getMax_y());
-        MatrixEntity updatedMatrixEntity = matrixService.saveMatrixEntity(oldMatrixEntity);
-        matrixDTO.setId(updatedMatrixEntity.getId());
-        return new ResponseEntity<>(matrixDTO, HttpStatus.OK);
+        MatrixEntity updatedMatrix = matrixService.updateMatrix(matrixDTO);
+        return new ResponseEntity<>(updatedMatrix, HttpStatus.OK);
 
     }
+
+
 }
