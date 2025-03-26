@@ -2,10 +2,10 @@ package com.salvador.droneControl.application.mapper;
 
 import com.salvador.droneControl.application.dto.DroneDTO;
 import com.salvador.droneControl.application.dto.DroneEntradaDTO;
+import com.salvador.droneControl.application.dto.DroneNoIdDTO;
 import com.salvador.droneControl.domain.model.Drone;
+import com.salvador.droneControl.domain.model.Matrix;
 import com.salvador.droneControl.domain.model.Orientacion;
-import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
-import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,33 +20,33 @@ public class DroneMapper {
         this.modelMapper = modelMapper;
     }
 
-    public DroneDTO mapDroneEntityToDTO(DroneEntity droneEntity) {
-        DroneDTO droneDTO = modelMapper.map(droneEntity, DroneDTO.class);
-        droneDTO.setMatrizId(droneEntity.getMatriz().getId());
+    public DroneNoIdDTO mapDroneEntityToDTO(Drone drone) {
+        DroneNoIdDTO droneNoIdDTO = modelMapper.map(drone, DroneNoIdDTO.class);
+        droneNoIdDTO.setMatrizId(drone.getMatriz().getId());
+        return droneNoIdDTO;
+    }
+
+    public DroneDTO mapDroneEntityToDrone(Drone drone) {
+        DroneDTO droneDTO = modelMapper.map(drone, DroneDTO.class);
+        droneDTO.setMatrizId(drone.getMatriz().getId());
         return droneDTO;
     }
 
-    public Drone mapDroneEntityToDrone(DroneEntity droneEntity) {
-        Drone drone = modelMapper.map(droneEntity, Drone.class);
-        drone.setMatriz_id(droneEntity.getMatriz().getId());
+    public Drone mapDroneDTOToEntity(DroneNoIdDTO droneNoIdDTO) {
+        return modelMapper.map(droneNoIdDTO, Drone.class);
+    }
+
+    public Drone mapEntradaDTOToEntity(DroneEntradaDTO droneEntradaDTO) {
+        return modelMapper.map(droneEntradaDTO, Drone.class);
+    }
+
+    public Drone mapUpdateDroneDTOToEntity(DroneNoIdDTO droneNoIdDTO, Drone drone, Matrix matrix) {
+        drone.setNombre(droneNoIdDTO.getNombre());
+        drone.setModelo(droneNoIdDTO.getModelo());
+        drone.setX(droneNoIdDTO.getX());
+        drone.setY(droneNoIdDTO.getY());
+        drone.setOrientacion(Orientacion.valueOf(droneNoIdDTO.getOrientacion()));
+        drone.setMatriz(matrix);
         return drone;
-    }
-
-    public DroneEntity mapDroneDTOToEntity(DroneDTO droneDTO) {
-        return modelMapper.map(droneDTO, DroneEntity.class);
-    }
-
-    public DroneEntity mapEntradaDTOToEntity(DroneEntradaDTO droneEntradaDTO) {
-        return modelMapper.map(droneEntradaDTO, DroneEntity.class);
-    }
-
-    public DroneEntity mapUpdateDroneDTOToEntity(DroneDTO droneDTO, DroneEntity droneEntity, MatrixEntity matrixEntity) {
-        droneEntity.setNombre(droneDTO.getNombre());
-        droneEntity.setModelo(droneDTO.getModelo());
-        droneEntity.setX(droneDTO.getX());
-        droneEntity.setY(droneDTO.getY());
-        droneEntity.setOrientacion(Orientacion.valueOf(droneDTO.getOrientacion()));
-        droneEntity.setMatriz(matrixEntity);
-        return droneEntity;
     }
 }

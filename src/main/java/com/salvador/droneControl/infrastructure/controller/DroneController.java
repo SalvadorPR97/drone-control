@@ -1,12 +1,8 @@
 package com.salvador.droneControl.infrastructure.controller;
 
-import com.salvador.droneControl.application.dto.DatosEntradaDTO;
-import com.salvador.droneControl.application.dto.DroneCoordinatesDTO;
-import com.salvador.droneControl.application.dto.DroneDTO;
-import com.salvador.droneControl.application.dto.DroneMoveDTO;
-import com.salvador.droneControl.application.service.DroneService;
-import com.salvador.droneControl.domain.model.Drone;
-import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
+import com.salvador.droneControl.application.dto.*;
+import com.salvador.droneControl.domain.model.Matrix;
+import com.salvador.droneControl.domain.service.DroneService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,46 +24,46 @@ public class DroneController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Drone> newDrone(@RequestBody @Valid DroneDTO droneDTO) {
+    public ResponseEntity<DroneDTO> newDrone(@RequestBody @Valid DroneNoIdDTO droneNoIdDTO) {
         logger.info("Creando dron");
-        Drone newDrone = droneService.createDrone(droneDTO);
-        return new ResponseEntity<>(newDrone, HttpStatus.CREATED);
+        DroneDTO newDroneDTO = droneService.createDrone(droneNoIdDTO);
+        return new ResponseEntity<>(newDroneDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Drone> updateDrone(@RequestBody @Valid DroneDTO droneDTO, @PathVariable Long id) {
+    public ResponseEntity<DroneDTO> updateDrone(@RequestBody @Valid DroneNoIdDTO droneNoIdDTO, @PathVariable Long id) {
         logger.info("Actualizando dron");
-        Drone updatedDrone = droneService.updateDrone(droneDTO, id);
-        return new ResponseEntity<>(updatedDrone, HttpStatus.OK);
+        DroneDTO updatedDroneDTO = droneService.updateDrone(droneNoIdDTO, id);
+        return new ResponseEntity<>(updatedDroneDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Drone> deleteDrone(@PathVariable Long id) {
+    public ResponseEntity<DroneDTO> deleteDrone(@PathVariable Long id) {
         logger.info("Borrando dron");
-        Drone deletedDrone = droneService.deleteDroneEntityById(id);
-        return new ResponseEntity<>(deletedDrone, HttpStatus.OK);
+        DroneDTO deletedDroneDTO = droneService.deleteDroneEntityById(id);
+        return new ResponseEntity<>(deletedDroneDTO, HttpStatus.OK);
     }
 
     @PostMapping("/findByCoordinates")
-    public ResponseEntity<Drone> findByCoordinates(@RequestBody @Valid DroneCoordinatesDTO droneCoordinatesDTO) {
+    public ResponseEntity<DroneDTO> findByCoordinates(@RequestBody @Valid DroneCoordinatesDTO droneCoordinatesDTO) {
         logger.info("Buscando dron por coordenadas x={} y={}", droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
-        Drone drone = droneService.getDroneByCoordinates(
+        DroneDTO droneDTO = droneService.getDroneByCoordinates(
                 droneCoordinatesDTO.getMatriz_id(), droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
-        return new ResponseEntity<>(drone, HttpStatus.OK);
+        return new ResponseEntity<>(droneDTO, HttpStatus.OK);
     }
 
     @PostMapping("/move")
-    public ResponseEntity<MatrixEntity> moveOne(@RequestBody @Valid DroneMoveDTO droneMoveDTO) {
+    public ResponseEntity<Matrix> moveOne(@RequestBody @Valid DroneMoveDTO droneMoveDTO) {
         logger.info("Moviendo dron con id: {}", droneMoveDTO.getId());
-        MatrixEntity matrizResultante = droneService.moveOneDrone(droneMoveDTO);
+        Matrix matrizResultante = droneService.moveOneDrone(droneMoveDTO);
         return new ResponseEntity<>(matrizResultante, HttpStatus.OK);
     }
 
     @PostMapping("/moveManyInMatrix/{id}")
-    public ResponseEntity<MatrixEntity> moveMany(@RequestBody @Valid DatosEntradaDTO datosEntradaDTO, @PathVariable Long id) {
+    public ResponseEntity<Matrix> moveMany(@RequestBody @Valid DatosEntradaDTO datosEntradaDTO, @PathVariable Long id) {
         logger.info("Moviendo varios drones");
-        MatrixEntity matrixEntity = droneService.moveManyInMatrix(datosEntradaDTO, id);
-        return new ResponseEntity<>(matrixEntity, HttpStatus.OK);
+        Matrix matrix = droneService.moveManyInMatrix(datosEntradaDTO, id);
+        return new ResponseEntity<>(matrix, HttpStatus.OK);
     }
 
 }

@@ -1,8 +1,7 @@
 package com.salvador.droneControl.application.mapper;
 
-import com.salvador.droneControl.application.dto.MatrixDTO;
+import com.salvador.droneControl.application.dto.MatrixDataDTO;
 import com.salvador.droneControl.domain.model.Matrix;
-import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,16 +16,12 @@ public class MatrixMapper {
         this.modelMapper = modelMapper;
     }
 
-    public Matrix mapMatrixEntityToMatrix(MatrixEntity matrixEntity) {
-        return modelMapper.map(matrixEntity, Matrix.class);
+    public Matrix mapMatrixDTOToMatrixEntity(MatrixDataDTO matrixDataDTO) {
+        return modelMapper.map(matrixDataDTO, Matrix.class);
     }
 
-    public MatrixEntity mapMatrixDTOToMatrixEntity(MatrixDTO matrixDTO) {
-        return modelMapper.map(matrixDTO, MatrixEntity.class);
-    }
-
-    public MatrixDTO mapMatrixEntityToMatrixDTO(MatrixEntity matrixEntity) {
-        return modelMapper.map(matrixEntity, MatrixDTO.class);
+    public MatrixDataDTO mapMatrixEntityToMatrixDTO(Matrix matrix) {
+        return modelMapper.map(matrix, MatrixDataDTO.class);
     }
 
 }

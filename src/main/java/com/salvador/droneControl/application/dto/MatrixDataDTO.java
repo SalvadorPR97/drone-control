@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class MatrixDTO {
+public class MatrixDataDTO {
 
     @PositiveOrZero(message = "el id debe ser 0 o mayor")
     private Long id;
