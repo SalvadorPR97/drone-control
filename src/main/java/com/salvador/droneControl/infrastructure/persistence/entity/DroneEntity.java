@@ -6,6 +6,8 @@ import com.salvador.droneControl.domain.model.Orientacion;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Data
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class DroneEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String nombre;
@@ -33,6 +35,7 @@ public class DroneEntity {
     private Orientacion orientacion;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "matriz_id")
     @JsonBackReference
     private MatrixEntity matriz;
