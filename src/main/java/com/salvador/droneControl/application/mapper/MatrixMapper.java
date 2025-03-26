@@ -17,12 +17,16 @@ public class MatrixMapper {
         this.modelMapper = modelMapper;
     }
 
-    public Matrix mapToMatrix(MatrixEntity matrixEntity) {
+    public Matrix mapMatrixEntityToMatrix(MatrixEntity matrixEntity) {
         return modelMapper.map(matrixEntity, Matrix.class);
     }
 
-    public MatrixEntity mapToMatrixEntity(MatrixDTO matrixDTO) {
+    public MatrixEntity mapMatrixDTOToMatrixEntity(MatrixDTO matrixDTO) {
         return modelMapper.map(matrixDTO, MatrixEntity.class);
+    }
+
+    public MatrixDTO mapMatrixEntityToMatrixDTO(MatrixEntity matrixEntity) {
+        return modelMapper.map(matrixEntity, MatrixDTO.class);
     }
 
 }

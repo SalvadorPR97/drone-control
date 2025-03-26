@@ -3,7 +3,9 @@ package com.salvador.droneControl.infrastructure.controller;
 import com.salvador.droneControl.application.dto.MatrixDTO;
 import com.salvador.droneControl.application.dto.MatrixEntradaDTO;
 import com.salvador.droneControl.application.service.MatrixService;
+import com.salvador.droneControl.domain.model.Matrix;
 import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +48,9 @@ public class MatrixController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<MatrixEntity> deleteDrone(@PathVariable Long id) {
+    public ResponseEntity<MatrixDTO> deleteMatrix(@PathVariable Long id) {
         logger.info("Borrando matriz...");
-        MatrixEntity deletedMatrix = matrixService.deleteMatrixById(id);
+        MatrixDTO deletedMatrix = matrixService.deleteMatrixById(id);
         return new ResponseEntity<>(deletedMatrix, HttpStatus.OK);
     }
-
-
 }
