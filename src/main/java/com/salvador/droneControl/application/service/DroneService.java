@@ -5,6 +5,7 @@ import com.salvador.droneControl.application.dto.DroneDTO;
 import com.salvador.droneControl.application.dto.DroneEntradaDTO;
 import com.salvador.droneControl.application.dto.DroneMoveDTO;
 import com.salvador.droneControl.application.mapper.DroneMapper;
+import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.domain.model.Movimientos;
 import com.salvador.droneControl.domain.model.Orientacion;
 import com.salvador.droneControl.infrastructure.exception.ResourceNotFoundException;
@@ -42,14 +43,14 @@ public class DroneService {
         return droneRepository.save(droneEntity);
     }
 
-    public DroneEntity deleteDroneEntityById(long id) {
+    public Drone deleteDroneEntityById(long id) {
         DroneEntity droneEntity = this.getDroneEntityById(id);
         droneRepository.delete(droneEntity);
-        return droneEntity;
+        return droneMapper.mapDroneEntityToDrone(droneEntity);
     }
 
-    public DroneDTO createDrone(DroneDTO droneDTO) {
-        DroneEntity droneEntity = droneMapper.mapToEntity(droneDTO);
+    public Drone createDrone(DroneDTO droneDTO) {
+        DroneEntity droneEntity = droneMapper.mapDroneDTOToEntity(droneDTO);
         MatrixEntity matrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
 
         //Comprobamos que el dron que creamos esté dentro de la matriz y que no esté en las mismas coordenadas
@@ -59,25 +60,26 @@ public class DroneService {
 
         droneEntity.setMatriz(matrixEntity);
         DroneEntity createdDroneEntity = this.saveDroneEntity(droneEntity);
-        droneDTO.setId(createdDroneEntity.getId());
-        return droneDTO;
+        return droneMapper.mapDroneEntityToDrone(createdDroneEntity);
     }
 
-    public DroneEntity updateDrone(DroneDTO droneDTO, long id) {
+    public Drone updateDrone(DroneDTO droneDTO, long id) {
         DroneEntity oldDroneEntity = this.getDroneEntityById(id);
         MatrixEntity matrixEntity = matrixService.getMatrixEntityById(droneDTO.getMatrizId());
-
         coordinatesOutOfMatrix(droneDTO, matrixEntity);
-        coordinatesBusy(droneDTO, matrixEntity);
-        DroneEntity updatedDrone = droneMapper.mapUpdateDroneDTOToEntity(droneDTO, oldDroneEntity, matrixEntity);
-        return this.saveDroneEntity(updatedDrone);
+        if (oldDroneEntity.getX() != droneDTO.getX() && oldDroneEntity.getY() != droneDTO.getY()) {
+            coordinatesBusy(droneDTO, matrixEntity);
+        }
+        DroneEntity mapUpdatedDroneEntity = droneMapper.mapUpdateDroneDTOToEntity(droneDTO, oldDroneEntity, matrixEntity);
+        DroneEntity updatedDroneEntity = this.saveDroneEntity(mapUpdatedDroneEntity);
+        return droneMapper.mapDroneEntityToDrone(updatedDroneEntity);
     }
 
-    public DroneEntity getDroneEntityByCoordinates(long matrizId, int x, int y) {
-
-        return droneRepository.findByCoordinates(matrizId, x, y).orElseThrow(() ->
+    public Drone getDroneByCoordinates(long matrizId, int x, int y) {
+        DroneEntity droneEntity = droneRepository.findByCoordinates(matrizId, x, y).orElseThrow(() ->
                 new ResourceNotFoundException("Drone no encontrado en la matriz en las coordenadas x= " +
                         x + ", y= " + y));
+        return droneMapper.mapDroneEntityToDrone(droneEntity);
     }
 
     public MatrixEntity moveOneDrone(DroneMoveDTO droneMoveDTO) {
@@ -149,7 +151,7 @@ public class DroneService {
                 drone.setX(drone.getX() - 1);
                 break;
         }
-        coordinatesBusy(droneMapper.mapToDTO(drone), matrixEntity);
-        coordinatesOutOfMatrix(droneMapper.mapToDTO(drone), matrixEntity);
+        coordinatesBusy(droneMapper.mapDroneEntityToDTO(drone), matrixEntity);
+        coordinatesOutOfMatrix(droneMapper.mapDroneEntityToDTO(drone), matrixEntity);
     }
 }

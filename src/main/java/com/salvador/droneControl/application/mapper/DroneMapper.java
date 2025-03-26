@@ -2,6 +2,7 @@ package com.salvador.droneControl.application.mapper;
 
 import com.salvador.droneControl.application.dto.DroneDTO;
 import com.salvador.droneControl.application.dto.DroneEntradaDTO;
+import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.domain.model.Orientacion;
 import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
 import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
@@ -19,15 +20,19 @@ public class DroneMapper {
         this.modelMapper = modelMapper;
     }
 
-    public DroneDTO mapToDTO(DroneEntity droneEntity) {
+    public DroneDTO mapDroneEntityToDTO(DroneEntity droneEntity) {
         DroneDTO droneDTO = modelMapper.map(droneEntity, DroneDTO.class);
-        if (droneEntity.getMatriz() != null) {
-            droneDTO.setMatrizId(droneEntity.getMatriz().getId());
-        }
+        droneDTO.setMatrizId(droneEntity.getMatriz().getId());
         return droneDTO;
     }
 
-    public DroneEntity mapToEntity(DroneDTO droneDTO) {
+    public Drone mapDroneEntityToDrone(DroneEntity droneEntity) {
+        Drone drone = modelMapper.map(droneEntity, Drone.class);
+        drone.setMatriz_id(droneEntity.getMatriz().getId());
+        return drone;
+    }
+
+    public DroneEntity mapDroneDTOToEntity(DroneDTO droneDTO) {
         return modelMapper.map(droneDTO, DroneEntity.class);
     }
 

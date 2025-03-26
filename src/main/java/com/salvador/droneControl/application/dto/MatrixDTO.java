@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MatrixDTO {
 
-
     private Long id;
     @Positive(message = "El valor del eje X debe ser positivo")
     private int max_x;

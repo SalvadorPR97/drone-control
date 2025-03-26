@@ -1,6 +1,5 @@
 package com.salvador.droneControl.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -11,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DroneDTO {
 
-    @JsonIgnore
-    private long id;
     @NotBlank
     private String nombre;
     @NotBlank
