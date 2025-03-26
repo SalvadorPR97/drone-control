@@ -1,5 +1,6 @@
 package com.salvador.droneControl.application.dto;
 
+import com.salvador.droneControl.infrastructure.validation.MatrixExists;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ public class DroneCoordinatesDTO {
     private int x;
     @PositiveOrZero(message = "El valor del eje Y debe ser positivo")
     private int y;
-    @PositiveOrZero(message = "El valor debe ser positivo")
+    @MatrixExists
     private Long matriz_id;
 
 }

@@ -1,5 +1,6 @@
 package com.salvador.droneControl.application.dto;
 
+import com.salvador.droneControl.infrastructure.validation.MatrixExists;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -20,7 +21,6 @@ public class DroneNoIdDTO {
     private int y;
     @Pattern(regexp = "[NSEO]", message = "Orientación inválida")
     private String orientacion;
-    // TODO Añadir validador que compruebe que la matriz existe
-    @PositiveOrZero(message = "El valor debe ser positivo")
+    @MatrixExists
     private Long matrizId;
 }
