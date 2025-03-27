@@ -1,6 +1,7 @@
 package com.salvador.droneControl.application.dto;
 
 import com.salvador.droneControl.domain.model.Movimientos;
+import com.salvador.droneControl.infrastructure.validation.DroneExists;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DroneEntradaDTO {
 
-    @PositiveOrZero(message = "El id debe ser 0 o mayor")
+    @DroneExists
     private long id;
     @NotBlank(message = "el nombre no debe estar vacío")
     private String nombre;
