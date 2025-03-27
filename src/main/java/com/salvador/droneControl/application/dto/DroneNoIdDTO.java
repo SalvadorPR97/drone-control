@@ -1,22 +1,17 @@
 package com.salvador.droneControl.application.dto;
 
-
-import com.salvador.droneControl.domain.model.Orientacion;
 import com.salvador.droneControl.infrastructure.validation.MatrixExists;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Schema(description = "DTO que representa un dron")
+@Schema(description = "DTO del dron sin campo id")
 @Data
 @NoArgsConstructor
-public class DroneDTO {
-
-    @Schema(description = "Id del dron", example = "1")
-    @PositiveOrZero(message = "El id debe ser 0 o mayor")
-    private long id;
+public class DroneNoIdDTO {
 
     @Schema(description = "Nombre del dron", example = "Dron Alfa")
     @NotBlank(message = "el nombre no debe estar vacío")
@@ -35,9 +30,10 @@ public class DroneDTO {
     private int y;
 
     @Schema(description = "Orientación del dron", example = "N")
-    private Orientacion orientacion;
-    @MatrixExists
+    @Pattern(regexp = "[NSEO]", message = "Orientación inválida")
+    private String orientacion;
 
     @Schema(description = "Id de la matriz a la que está asociado el dron", example = "1")
+    @MatrixExists
     private Long matrizId;
 }

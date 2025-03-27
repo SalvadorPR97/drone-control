@@ -1,4 +1,4 @@
-package com.salvador.droneControl.configuration;
+package com.salvador.droneControl.infrastructure.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

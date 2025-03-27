@@ -1,13 +1,13 @@
-package com.salvador.droneControl.application.service;
+package com.salvador.droneControl.domain.service;
 
 import com.salvador.droneControl.application.dto.MatrixDTO;
 import com.salvador.droneControl.application.dto.MatrixEntradaDTO;
 import com.salvador.droneControl.application.mapper.MatrixMapper;
+import com.salvador.droneControl.domain.model.Drone;
+import com.salvador.droneControl.domain.model.Matrix;
+import com.salvador.droneControl.domain.repository.MatrixRepository;
 import com.salvador.droneControl.infrastructure.exception.ResourceNotFoundException;
 import com.salvador.droneControl.infrastructure.exception.WrongCoordinatesException;
-import com.salvador.droneControl.infrastructure.persistence.entity.DroneEntity;
-import com.salvador.droneControl.infrastructure.persistence.entity.MatrixEntity;
-import com.salvador.droneControl.infrastructure.persistence.repository.MatrixRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,42 +26,42 @@ public class MatrixService {
         this.matrixMapper = matrixMapper;
     }
 
-    public MatrixEntity getMatrixEntityById(long id) {
+    public Matrix getMatrixEntityById(long id) {
         return matrixRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Matriz no encontrada con id: " + id));
     }
 
-    public MatrixEntity saveMatrixEntity(MatrixEntity matrixEntity) {
-        return matrixRepository.save(matrixEntity);
+    public Matrix saveMatrixEntity(Matrix matrix) {
+        return matrixRepository.save(matrix);
     }
 
     public MatrixDTO createMatrix(MatrixEntradaDTO matrixEntradaDTO) {
         MatrixDTO matrix = new MatrixDTO();
         matrix.setMax_x(matrixEntradaDTO.getMax_x());
         matrix.setMax_y(matrixEntradaDTO.getMax_y());
-        MatrixEntity insertedMatrix = this.saveMatrixEntity(matrixMapper.mapMatrixDTOToMatrixEntity(matrix));
+        Matrix insertedMatrix = this.saveMatrixEntity(matrixMapper.mapMatrixDTOToMatrixEntity(matrix));
 
         matrix.setId(insertedMatrix.getId());
         return matrix;
     }
 
-    public MatrixEntity updateMatrix(MatrixEntradaDTO matrixEntradaDTO, long id) {
-        MatrixEntity oldMatrixEntity = this.getMatrixEntityById(id);
-        oldMatrixEntity.setMax_x(matrixEntradaDTO.getMax_x());
-        oldMatrixEntity.setMax_y(matrixEntradaDTO.getMax_y());
-        for (DroneEntity drone : oldMatrixEntity.getDrones()) {
-            this.droneOutOfMatrix(drone, oldMatrixEntity);
+    public Matrix updateMatrix(MatrixEntradaDTO matrixEntradaDTO, long id) {
+        Matrix oldMatrix = this.getMatrixEntityById(id);
+        oldMatrix.setMax_x(matrixEntradaDTO.getMax_x());
+        oldMatrix.setMax_y(matrixEntradaDTO.getMax_y());
+        for (Drone drone : oldMatrix.getDrones()) {
+            this.droneOutOfMatrix(drone, oldMatrix);
         }
-        return this.saveMatrixEntity(oldMatrixEntity);
+        return this.saveMatrixEntity(oldMatrix);
     }
 
     public MatrixDTO deleteMatrixById(Long id) {
-        MatrixEntity matrixEntity = this.getMatrixEntityById(id);
+        Matrix matrix = this.getMatrixEntityById(id);
         matrixRepository.deleteById(id);
-        return matrixMapper.mapMatrixEntityToMatrixDTO(matrixEntity);
+        return matrixMapper.mapMatrixEntityToMatrixDTO(matrix);
     }
 
-    private void droneOutOfMatrix(DroneEntity drone, MatrixEntity matrixEntity) {
-        if (drone.getX() > matrixEntity.getMax_x() || drone.getY() > matrixEntity.getMax_y()) {
+    private void droneOutOfMatrix(Drone drone, Matrix matrix) {
+        if (drone.getX() > matrix.getMax_x() || drone.getY() > matrix.getMax_y()) {
             String errorMessage = "Quedarían drones fuera de la nueva matriz";
             logger.error(errorMessage);
             throw new WrongCoordinatesException(errorMessage);
