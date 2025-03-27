@@ -4,6 +4,7 @@ import com.salvador.droneControl.application.dto.*;
 import com.salvador.droneControl.domain.model.Matrix;
 import com.salvador.droneControl.domain.service.DroneService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,7 +39,8 @@ public class DroneController {
                             schema = @Schema(example = "{\"message\": \"Error en los datos de la petición\"}")))
     })
     @PostMapping("/new")
-    public ResponseEntity<DroneDTO> newDrone(@RequestBody @Valid DroneNoIdDTO droneNoIdDTO) {
+    public ResponseEntity<DroneDTO> newDrone(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para crear un nuevo dron")
+                                             @RequestBody @Valid DroneNoIdDTO droneNoIdDTO) {
         logger.info("Creando dron");
         DroneDTO newDroneDTO = droneService.createDrone(droneNoIdDTO);
         return new ResponseEntity<>(newDroneDTO, HttpStatus.CREATED);
@@ -52,7 +54,10 @@ public class DroneController {
                             schema = @Schema(example = "{\"message\": \"Dron no encontrado\"}")))
     })
     @PutMapping("/update/{id}")
-    public ResponseEntity<DroneDTO> updateDrone(@RequestBody @Valid DroneNoIdDTO droneNoIdDTO, @PathVariable Long id) {
+    public ResponseEntity<DroneDTO> updateDrone(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para actualizar el dron")
+                                                @RequestBody @Valid DroneNoIdDTO droneNoIdDTO,
+                                                @Parameter(description = "ID de la matriz a actualizar", example = "1")
+                                                @PathVariable Long id) {
         logger.info("Actualizando dron");
         DroneDTO updatedDroneDTO = droneService.updateDrone(droneNoIdDTO, id);
         return new ResponseEntity<>(updatedDroneDTO, HttpStatus.OK);
@@ -66,7 +71,7 @@ public class DroneController {
                             schema = @Schema(example = "{\"message\": \"Dron no encontrado\"}")))
     })
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<DroneDTO> deleteDrone(@PathVariable Long id) {
+    public ResponseEntity<DroneDTO> deleteDrone(@Parameter(description = "ID de la matriz a borrar", example = "1") @PathVariable Long id) {
         logger.info("Borrando dron");
         DroneDTO deletedDroneDTO = droneService.deleteDroneEntityById(id);
         return new ResponseEntity<>(deletedDroneDTO, HttpStatus.OK);
@@ -81,7 +86,8 @@ public class DroneController {
                                     "coordenadas x= x, y= y\"}")))
     })
     @PostMapping("/findByCoordinates")
-    public ResponseEntity<DroneDTO> findByCoordinates(@RequestBody @Valid DroneCoordinatesDTO droneCoordinatesDTO) {
+    public ResponseEntity<DroneDTO> findByCoordinates(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para buscar un dron por sus coordenadas")
+                                                      @RequestBody @Valid DroneCoordinatesDTO droneCoordinatesDTO) {
         logger.info("Buscando dron por coordenadas x={} y={}", droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
         DroneDTO droneDTO = droneService.getDroneByCoordinates(
                 droneCoordinatesDTO.getMatriz_id(), droneCoordinatesDTO.getX(), droneCoordinatesDTO.getY());
@@ -93,7 +99,8 @@ public class DroneController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(example = "{\"message\": \"Error encontrado\"}")))
     @PostMapping("/move")
-    public ResponseEntity<Matrix> moveOne(@RequestBody @Valid DroneMoveDTO droneMoveDTO) {
+    public ResponseEntity<Matrix> moveOne(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para mover un dron")
+                                          @RequestBody @Valid DroneMoveDTO droneMoveDTO) {
         logger.info("Moviendo dron con id: {}", droneMoveDTO.getId());
         Matrix matrizResultante = droneService.moveOneDrone(droneMoveDTO);
         return new ResponseEntity<>(matrizResultante, HttpStatus.OK);
@@ -104,7 +111,10 @@ public class DroneController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(example = "{\"message\": \"Error encontrado\"}")))
     @PostMapping("/moveManyInMatrix/{id}")
-    public ResponseEntity<Matrix> moveMany(@RequestBody @Valid DatosEntradaDTO datosEntradaDTO, @PathVariable Long id) {
+    public ResponseEntity<Matrix> moveMany(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para mover varios drones en un matriz")
+                                           @RequestBody @Valid DatosEntradaDTO datosEntradaDTO,
+                                           @Parameter(description = "ID de la matriz donde están los drones a mover", example = "1")
+                                           @PathVariable Long id) {
         logger.info("Moviendo varios drones");
         Matrix matrix = droneService.moveManyInMatrix(datosEntradaDTO, id);
         return new ResponseEntity<>(matrix, HttpStatus.OK);
