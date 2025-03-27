@@ -1,6 +1,6 @@
 package com.salvador.droneControl.domain.service;
 
-import com.salvador.droneControl.application.dto.MatrixDataDTO;
+import com.salvador.droneControl.application.dto.MatrixDTO;
 import com.salvador.droneControl.application.dto.MatrixEntradaDTO;
 import com.salvador.droneControl.application.mapper.MatrixMapper;
 import com.salvador.droneControl.domain.model.Drone;
@@ -34,8 +34,8 @@ public class MatrixService {
         return matrixRepository.save(matrix);
     }
 
-    public MatrixDataDTO createMatrix(MatrixEntradaDTO matrixEntradaDTO) {
-        MatrixDataDTO matrix = new MatrixDataDTO();
+    public MatrixDTO createMatrix(MatrixEntradaDTO matrixEntradaDTO) {
+        MatrixDTO matrix = new MatrixDTO();
         matrix.setMax_x(matrixEntradaDTO.getMax_x());
         matrix.setMax_y(matrixEntradaDTO.getMax_y());
         Matrix insertedMatrix = this.saveMatrixEntity(matrixMapper.mapMatrixDTOToMatrixEntity(matrix));
@@ -54,7 +54,7 @@ public class MatrixService {
         return this.saveMatrixEntity(oldMatrix);
     }
 
-    public MatrixDataDTO deleteMatrixById(Long id) {
+    public MatrixDTO deleteMatrixById(Long id) {
         Matrix matrix = this.getMatrixEntityById(id);
         matrixRepository.deleteById(id);
         return matrixMapper.mapMatrixEntityToMatrixDTO(matrix);
