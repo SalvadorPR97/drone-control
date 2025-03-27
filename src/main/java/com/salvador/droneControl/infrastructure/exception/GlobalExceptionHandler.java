@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     @ApiResponse(responseCode = "400", description = "Error de formato en la solicitud",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(example = "{\"message\": \"Error de formato en la solicitud\"}")))
-    public ResponseEntity<Map<String, String>> handleJsonParseError(HttpMessageNotReadableException ex) {
+    public ResponseEntity<Map<String, String>> handleJsonParseError() {
         Map<String, String> response = new HashMap<>();
         response.put(ERROR_KEY, "Error de formato. Verifique que los valores enviados sean correctos y no estén vacíos.");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
     @ApiResponse(responseCode = "400", description = "Violación de integridad de datos",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(example = "{\"message\": \"Violación de integridad de datos\"}")))
-    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation() {
         Map<String, String> response = new HashMap<>();
         response.put(ERROR_KEY, "No se puede eliminar la matriz porque tiene drones asociados.");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
