@@ -2,12 +2,14 @@ package com.salvador.droneControl.application.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "DTO para crear una matriz")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class MatrixEntradaDTO {
 
     @Schema(description = "Valor máximo del eje X de la matriz", example = "5")

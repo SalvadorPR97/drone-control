@@ -38,7 +38,7 @@ public class MatrixService {
         MatrixDTO matrix = new MatrixDTO();
         matrix.setMax_x(matrixEntradaDTO.getMax_x());
         matrix.setMax_y(matrixEntradaDTO.getMax_y());
-        Matrix insertedMatrix = this.saveMatrix(matrixMapper.mapMatrixDTOToMatrixEntity(matrix));
+        Matrix insertedMatrix = this.saveMatrix(matrixMapper.mapMatrixDTOToMatrix(matrix));
 
         matrix.setId(insertedMatrix.getId());
         return matrix;
@@ -57,7 +57,7 @@ public class MatrixService {
     public MatrixDTO deleteMatrixById(Long id) {
         Matrix matrix = this.getMatrixById(id);
         matrixRepository.deleteById(id);
-        return matrixMapper.mapMatrixEntityToMatrixDTO(matrix);
+        return matrixMapper.mapMatrixToMatrixDTO(matrix);
     }
 
     private void droneOutOfMatrix(Drone drone, Matrix matrix) {
