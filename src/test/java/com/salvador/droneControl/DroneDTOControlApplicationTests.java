@@ -8,6 +8,7 @@ class DroneDTOControlApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//Clase main de tests
 	}
 
 }

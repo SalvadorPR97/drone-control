@@ -26,11 +26,11 @@ public class MatrixService {
         this.matrixMapper = matrixMapper;
     }
 
-    public Matrix getMatrixEntityById(long id) {
+    public Matrix getMatrixById(long id) {
         return matrixRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Matriz no encontrada con id: " + id));
     }
 
-    public Matrix saveMatrixEntity(Matrix matrix) {
+    public Matrix saveMatrix(Matrix matrix) {
         return matrixRepository.save(matrix);
     }
 
@@ -38,24 +38,24 @@ public class MatrixService {
         MatrixDTO matrix = new MatrixDTO();
         matrix.setMax_x(matrixEntradaDTO.getMax_x());
         matrix.setMax_y(matrixEntradaDTO.getMax_y());
-        Matrix insertedMatrix = this.saveMatrixEntity(matrixMapper.mapMatrixDTOToMatrixEntity(matrix));
+        Matrix insertedMatrix = this.saveMatrix(matrixMapper.mapMatrixDTOToMatrixEntity(matrix));
 
         matrix.setId(insertedMatrix.getId());
         return matrix;
     }
 
     public Matrix updateMatrix(MatrixEntradaDTO matrixEntradaDTO, long id) {
-        Matrix oldMatrix = this.getMatrixEntityById(id);
+        Matrix oldMatrix = this.getMatrixById(id);
         oldMatrix.setMax_x(matrixEntradaDTO.getMax_x());
         oldMatrix.setMax_y(matrixEntradaDTO.getMax_y());
         for (Drone drone : oldMatrix.getDrones()) {
             this.droneOutOfMatrix(drone, oldMatrix);
         }
-        return this.saveMatrixEntity(oldMatrix);
+        return this.saveMatrix(oldMatrix);
     }
 
     public MatrixDTO deleteMatrixById(Long id) {
-        Matrix matrix = this.getMatrixEntityById(id);
+        Matrix matrix = this.getMatrixById(id);
         matrixRepository.deleteById(id);
         return matrixMapper.mapMatrixEntityToMatrixDTO(matrix);
     }

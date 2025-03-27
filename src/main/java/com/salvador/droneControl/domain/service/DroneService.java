@@ -47,7 +47,7 @@ public class DroneService {
     }
 
     public DroneDTO createDrone(DroneNoIdDTO droneNoIdDTO) {
-        Matrix matrix = matrixService.getMatrixEntityById(droneNoIdDTO.getMatrizId());
+        Matrix matrix = matrixService.getMatrixById(droneNoIdDTO.getMatrizId());
         Drone drone = droneMapper.mapDroneDTOToEntity(droneNoIdDTO);
 
         //Comprobamos que el dron que creamos esté dentro de la matriz y que no esté en las mismas coordenadas
@@ -63,7 +63,7 @@ public class DroneService {
 
     public DroneDTO updateDrone(DroneNoIdDTO droneNoIdDTO, long id) {
         Drone oldDrone = this.getDroneEntityById(id);
-        Matrix matrix = matrixService.getMatrixEntityById(droneNoIdDTO.getMatrizId());
+        Matrix matrix = matrixService.getMatrixById(droneNoIdDTO.getMatrizId());
         coordinatesOutOfMatrix(droneMapper.mapDroneDTOToEntity(droneNoIdDTO), matrix);
         coordinatesBusy(droneMapper.mapDroneDTOToEntity(droneNoIdDTO), matrix);
 
@@ -81,13 +81,13 @@ public class DroneService {
 
     public Matrix moveOneDrone(DroneMoveDTO droneMoveDTO) {
         Drone drone = this.getDroneEntityById(droneMoveDTO.getId());
-        Matrix matrix = matrixService.getMatrixEntityById(droneMoveDTO.getMatrizId());
+        Matrix matrix = matrixService.getMatrixById(droneMoveDTO.getMatrizId());
         executeOrders(droneMoveDTO.getOrden(), drone, matrix);
         return matrix;
     }
 
     public Matrix moveManyInMatrix(DatosEntradaDTO datosEntradaDTO, long id) {
-        Matrix matrix = matrixService.getMatrixEntityById(id);
+        Matrix matrix = matrixService.getMatrixById(id);
         for (DroneEntradaDTO drone : datosEntradaDTO.getDrones()) {
             Drone droneEntity = droneMapper.mapEntradaDTOToEntity(drone);
             droneEntity.setMatriz(matrix);

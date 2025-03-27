@@ -113,7 +113,36 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version> <!-- Usa la última versión disponible -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version> <!-- Usa la última versión disponible -->
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>html</report> <!-- Generar reporte en formato HTML -->
+							<report>xml</report>  <!-- Generar reporte en formato XML -->
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
