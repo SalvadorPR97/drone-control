@@ -6,12 +6,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Schema(description = "DTO de los datos del dron para mover varios en una matriz")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class DroneEntradaDTO {
 
     @Schema(description = "Id del dron", example = "1")
@@ -40,6 +44,6 @@ public class DroneEntradaDTO {
 
     @Schema(description = "Lista de Movimientos que seguirá el dron",
             example = "[MOVE_FORWARD,TURN_LEFT,TURN_RIGHT]")
-    private Movimientos[] orden;
+    private List<Movimientos> orden;
 
 }

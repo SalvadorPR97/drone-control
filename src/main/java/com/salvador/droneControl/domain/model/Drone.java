@@ -4,6 +4,7 @@ package com.salvador.droneControl.domain.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "drones")
 public class Drone {
     @Schema(description = "Id del dron", example = "1")

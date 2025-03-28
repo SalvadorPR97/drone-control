@@ -7,6 +7,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Schema(description = "DTO para mover un dron")
 @Data
 @NoArgsConstructor
@@ -22,6 +24,6 @@ public class DroneMoveDTO {
 
     @Schema(description = "Lista de Movimientos que seguirá el dron",
             example = "[MOVE_FORWARD,TURN_LEFT,TURN_RIGHT]")
-    private Movimientos[] orden;
+    private List<Movimientos> orden;
 
 }

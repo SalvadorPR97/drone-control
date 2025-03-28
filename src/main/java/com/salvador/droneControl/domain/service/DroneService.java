@@ -43,12 +43,12 @@ public class DroneService {
     public DroneDTO deleteDroneEntityById(long id) {
         Drone drone = this.getDroneEntityById(id);
         droneRepository.delete(drone);
-        return droneMapper.mapDroneEntityToDrone(drone);
+        return droneMapper.mapDroneToDroneDTO(drone);
     }
 
     public DroneDTO createDrone(DroneNoIdDTO droneNoIdDTO) {
         Matrix matrix = matrixService.getMatrixById(droneNoIdDTO.getMatrizId());
-        Drone drone = droneMapper.mapDroneDTOToEntity(droneNoIdDTO);
+        Drone drone = droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO);
 
         //Comprobamos que el dron que creamos esté dentro de la matriz y que no esté en las mismas coordenadas
         //que otro dron
@@ -58,25 +58,26 @@ public class DroneService {
         drone.setId(null);
         drone.setMatriz(matrix);
         Drone createdDrone = this.saveDroneEntity(drone);
-        return droneMapper.mapDroneEntityToDrone(createdDrone);
+        return droneMapper.mapDroneToDroneDTO(createdDrone);
     }
 
     public DroneDTO updateDrone(DroneNoIdDTO droneNoIdDTO, long id) {
-        Drone oldDrone = this.getDroneEntityById(id);
         Matrix matrix = matrixService.getMatrixById(droneNoIdDTO.getMatrizId());
-        coordinatesOutOfMatrix(droneMapper.mapDroneDTOToEntity(droneNoIdDTO), matrix);
-        coordinatesBusy(droneMapper.mapDroneDTOToEntity(droneNoIdDTO), matrix);
+        coordinatesOutOfMatrix(droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO), matrix);
+        coordinatesBusy(droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO), matrix);
 
-        Drone mapUpdatedDrone = droneMapper.mapUpdateDroneDTOToEntity(droneNoIdDTO, oldDrone, matrix);
-        Drone updatedDrone = this.saveDroneEntity(mapUpdatedDrone);
-        return droneMapper.mapDroneEntityToDrone(updatedDrone);
+        Drone updatableDrone = droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO);
+        updatableDrone.setId(id);
+        updatableDrone.setMatriz(matrix);
+        Drone updatedDrone = this.saveDroneEntity(updatableDrone);
+        return droneMapper.mapDroneToDroneDTO(updatedDrone);
     }
 
     public DroneDTO getDroneByCoordinates(long matrizId, int x, int y) {
         Drone drone = droneRepository.findByCoordinates(matrizId, x, y).orElseThrow(() ->
                 new ResourceNotFoundException("Drone no encontrado en la matriz en las coordenadas x= " +
                         x + ", y= " + y));
-        return droneMapper.mapDroneEntityToDrone(drone);
+        return droneMapper.mapDroneToDroneDTO(drone);
     }
 
     public Matrix moveOneDrone(DroneMoveDTO droneMoveDTO) {
@@ -89,7 +90,7 @@ public class DroneService {
     public Matrix moveManyInMatrix(DatosEntradaDTO datosEntradaDTO, long id) {
         Matrix matrix = matrixService.getMatrixById(id);
         for (DroneEntradaDTO drone : datosEntradaDTO.getDrones()) {
-            Drone droneEntity = droneMapper.mapEntradaDTOToEntity(drone);
+            Drone droneEntity = droneMapper.mapDroneEntradaDTOToDrone(drone);
             droneEntity.setMatriz(matrix);
             executeOrders(drone.getOrden(), droneEntity, matrix);
         }
@@ -117,7 +118,7 @@ public class DroneService {
         }
     }
 
-    private void executeOrders(Movimientos[] ordenes, Drone drone, Matrix matrix) {
+    private void executeOrders(List<Movimientos> ordenes, Drone drone, Matrix matrix) {
         for (Movimientos orden : ordenes) {
             switch (orden) {
                 case MOVE_FORWARD:

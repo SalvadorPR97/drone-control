@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "DTO del dron sin campo id")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class DroneNoIdDTO {
 
     @Schema(description = "Nombre del dron", example = "Dron Alfa")
