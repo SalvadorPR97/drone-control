@@ -60,7 +60,7 @@ public class MatrixService {
         return matrixMapper.mapMatrixToMatrixDTO(matrix);
     }
 
-    private void droneOutOfMatrix(Drone drone, Matrix matrix) {
+    public void droneOutOfMatrix(Drone drone, Matrix matrix) {
         if (drone.getX() > matrix.getMax_x() || drone.getY() > matrix.getMax_y()) {
             String errorMessage = "Quedarían drones fuera de la nueva matriz";
             logger.error(errorMessage);

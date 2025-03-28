@@ -21,7 +21,7 @@ public class Matrix {
     @Schema(description = "Id de la matriz", example = "N")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Schema(description = "Valor máximo del eje X de la matriz", example = "5")
     @Column(nullable = false)
