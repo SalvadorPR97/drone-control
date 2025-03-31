@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DroneServiceTest {
@@ -92,8 +94,8 @@ class DroneServiceTest {
         assertEquals(droneNoIdDTO.getY(), result.getY());
         assertEquals(droneNoIdDTO.getMatrizId(), result.getMatrizId());
 
-        verify(droneService).coordinatesBusy(drone,matrix);
-        verify(droneService).coordinatesOutOfMatrix(drone,matrix);
+        verify(droneService).coordinatesBusy(drone, matrix);
+        verify(droneService).coordinatesOutOfMatrix(drone, matrix);
     }
 
     @Test
@@ -113,8 +115,8 @@ class DroneServiceTest {
         assertEquals(drone.getY(), result.getY());
         assertEquals(drone.getMatriz().getId(), result.getMatrizId());
 
-        verify(droneService).coordinatesBusy(drone,matrix);
-        verify(droneService).coordinatesOutOfMatrix(drone,matrix);
+        verify(droneService).coordinatesBusy(drone, matrix);
+        verify(droneService).coordinatesOutOfMatrix(drone, matrix);
     }
 
     @Test
@@ -125,6 +127,7 @@ class DroneServiceTest {
 
         assertEquals(droneDTO, result);
     }
+
     @Test
     void getDroneByCoordinatesWrongCooRdinates() {
         when(droneRepository.findByCoordinates(1L, 3, 2)).thenReturn(Optional.empty());
@@ -145,13 +148,13 @@ class DroneServiceTest {
 
         droneService.moveOneDrone(droneMoveDTO);
         verify(droneRepository).save(drone);
-        verify(droneService).executeOrders(droneMoveDTO.getOrden(),drone,matrix);
+        verify(droneService).executeOrders(droneMoveDTO.getOrden(), drone, matrix);
 
     }
 
     @Test
     void moveManyInMatrix() {
-        DroneEntradaDTO drone1 = new DroneEntradaDTO(1L,"Drone1", "ModeloA", 0, 0, "N", List.of(Movimientos.MOVE_FORWARD));
+        DroneEntradaDTO drone1 = new DroneEntradaDTO(1L, "Drone1", "ModeloA", 0, 0, "N", List.of(Movimientos.MOVE_FORWARD));
         DroneEntradaDTO drone2 = new DroneEntradaDTO(2L, "Drone2", "ModeloB", 1, 1, "N", List.of(Movimientos.MOVE_FORWARD));
         List<DroneEntradaDTO> dronesEntrada = List.of(drone1, drone2);
         DatosEntradaDTO datosEntradaDTO = new DatosEntradaDTO(new MatrixEntradaDTO(), dronesEntrada);
@@ -184,9 +187,10 @@ class DroneServiceTest {
         drone.setOrientacion(Orientacion.valueOf(orientation));
         droneService.moveForward(drone, matrix);
         assertEquals(result, drone.getX());
-        verify(droneService).coordinatesOutOfMatrix(drone,matrix);
-        verify(droneService).coordinatesBusy(drone,matrix);
+        verify(droneService).coordinatesOutOfMatrix(drone, matrix);
+        verify(droneService).coordinatesBusy(drone, matrix);
     }
+
     @ParameterizedTest
     @CsvSource({
             "S, 1",
@@ -196,14 +200,15 @@ class DroneServiceTest {
         drone.setOrientacion(Orientacion.valueOf(orientation));
         droneService.moveForward(drone, matrix);
         assertEquals(result, drone.getY());
-        verify(droneService).coordinatesOutOfMatrix(drone,matrix);
-        verify(droneService).coordinatesBusy(drone,matrix);
+        verify(droneService).coordinatesOutOfMatrix(drone, matrix);
+        verify(droneService).coordinatesBusy(drone, matrix);
     }
 
     @Test
     void coordinatesOutOfMatrix() {
         droneService.coordinatesOutOfMatrix(drone, matrix);
     }
+
     @Test
     void coordinatesOutOfMatrixWrongCoordinates() {
         drone.setX(6);
@@ -213,10 +218,12 @@ class DroneServiceTest {
 
         assertEquals("La coordenada excede el límite de la matriz", exception.getMessage());
     }
+
     @Test
     void coordinatesBusy() {
         droneService.coordinatesBusy(drone, matrix);
     }
+
     @Test
     void coordinatesBusyWrongCoordinates() {
         Drone drone2 = new Drone(2L, "Test", "Test", 2, 2, Orientacion.N, null);
@@ -230,9 +237,9 @@ class DroneServiceTest {
 
     @Test
     void executeOrders() {
-        List<Movimientos> movementList = List.of(Movimientos.MOVE_FORWARD,Movimientos.TURN_LEFT, Movimientos.TURN_RIGHT, Movimientos.TURN_RIGHT);
+        List<Movimientos> movementList = List.of(Movimientos.MOVE_FORWARD, Movimientos.TURN_LEFT, Movimientos.TURN_RIGHT, Movimientos.TURN_RIGHT);
         when(droneRepository.save(drone)).thenReturn(drone);
-        droneService.executeOrders(movementList,drone,matrix);
+        droneService.executeOrders(movementList, drone, matrix);
         assertEquals(Orientacion.E, drone.getOrientacion());
     }
 

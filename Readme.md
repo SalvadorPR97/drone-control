@@ -43,8 +43,9 @@ spring.datasource.password=admin
 ### **3️⃣ Compilar el proyecto**
 
 ```bash
- mvn clean install
+ mvn clean verify install
 ```
+❗**La aplicación no compilará si la cobertura de tests es menor al 80%**
 
 ### **4️⃣ Ejecutar la aplicación**
 
@@ -52,7 +53,7 @@ Puedes ejecutar la aplicación con **Maven** o desde el archivo JAR generado:
 
 #### **Con Maven**
 ```bash
- mvn spring-boot:run
+ mvn clean spring-boot:run
 ```
 
 #### **Con JAR**
@@ -68,7 +69,7 @@ Este proyecto usa **JUnit** y **Mockito** para pruebas unitarias e **integration
 
 ### **Ejecutar todos los tests**
 ```bash
- mvn test
+ mvn clean test
 ```
 
 ### **Ejecutar un test específico**

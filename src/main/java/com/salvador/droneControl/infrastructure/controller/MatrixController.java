@@ -40,7 +40,7 @@ public class MatrixController {
     @GetMapping("/get/{id}")
     public ResponseEntity<Matrix> getMatrixById(@Parameter(description = "ID de la matriz a buscar", example = "1") @PathVariable long id) {
         logger.info("Obteniendo matriz de id: {}", id);
-        Matrix matrix = matrixService.getMatrixById((int) id);
+        Matrix matrix = matrixService.getMatrixById(id);
         return new ResponseEntity<>(matrix, HttpStatus.OK);
     }
 

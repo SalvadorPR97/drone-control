@@ -6,9 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class DroneDTOControlApplicationTests {
 
-	@Test
-	void contextLoads() {
-		//Clase main de tests
-	}
+    @Test
+    void contextLoads() {
+        //Clase main de tests
+    }
 
 }
