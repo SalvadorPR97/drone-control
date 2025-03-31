@@ -73,7 +73,7 @@ public class DroneController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<DroneDTO> deleteDrone(@Parameter(description = "ID de la matriz a borrar", example = "1") @PathVariable Long id) {
         logger.info("Borrando dron");
-        DroneDTO deletedDroneDTO = droneService.deleteDroneEntityById(id);
+        DroneDTO deletedDroneDTO = droneService.deleteDroneById(id);
         return new ResponseEntity<>(deletedDroneDTO, HttpStatus.OK);
     }
 

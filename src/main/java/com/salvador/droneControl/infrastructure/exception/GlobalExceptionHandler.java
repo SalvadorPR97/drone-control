@@ -55,6 +55,7 @@ public class GlobalExceptionHandler {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(example = "{\"message\": \"Recurso no encontrado\"}")))
     public ResponseEntity<Map<String, String>> handleResourceNotFound(ResourceNotFoundException ex) {
+        System.out.println("-----------------");
         Map<String, String> response = new HashMap<>();
         response.put(ERROR_KEY, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
