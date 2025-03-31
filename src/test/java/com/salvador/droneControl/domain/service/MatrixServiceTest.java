@@ -7,6 +7,7 @@ import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.domain.model.Matrix;
 import com.salvador.droneControl.domain.model.Orientacion;
 import com.salvador.droneControl.domain.repository.MatrixRepository;
+import com.salvador.droneControl.infrastructure.exception.WrongCoordinatesException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -134,5 +135,17 @@ class MatrixServiceTest {
         verify(matrixRepository).findById(1L);  // Verifica que se haya llamado a findById
         verify(matrixRepository).deleteById(1L);  // Verifica que se haya llamado a deleteById
         verify(matrixMapper).mapMatrixToMatrixDTO(matrix);  // Verifica que se haya mapeado correctamente la matriz a DTO
+    }
+
+    @Test
+    void droneOutOfMatrix() {
+        Matrix matrix = new Matrix(1L, 5, 5, new ArrayList<>());
+        Drone drone = new Drone(1L, "Test", "Test", 6, 6, Orientacion.N, matrix);
+
+        WrongCoordinatesException exception = assertThrows(WrongCoordinatesException.class, () -> {
+            matrixService.droneOutOfMatrix(drone, matrix);
+        });
+
+        assertEquals("Quedarían drones fuera de la nueva matriz", exception.getMessage());
     }
 }

@@ -32,16 +32,16 @@ public class DroneService {
         this.matrixService = matrixService;
     }
 
-    public Drone getDroneEntityById(long id) {
+    public Drone getDroneById(long id) {
         return droneRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Drone no encontrado con id: " + id));
     }
 
-    public Drone saveDroneEntity(Drone drone) {
+    public Drone saveDrone(Drone drone) {
         return droneRepository.save(drone);
     }
 
-    public DroneDTO deleteDroneEntityById(long id) {
-        Drone drone = this.getDroneEntityById(id);
+    public DroneDTO deleteDroneById(long id) {
+        Drone drone = this.getDroneById(id);
         droneRepository.delete(drone);
         return droneMapper.mapDroneToDroneDTO(drone);
     }
@@ -57,19 +57,19 @@ public class DroneService {
 
         drone.setId(null);
         drone.setMatriz(matrix);
-        Drone createdDrone = this.saveDroneEntity(drone);
+        Drone createdDrone = this.saveDrone(drone);
         return droneMapper.mapDroneToDroneDTO(createdDrone);
     }
 
     public DroneDTO updateDrone(DroneNoIdDTO droneNoIdDTO, long id) {
         Matrix matrix = matrixService.getMatrixById(droneNoIdDTO.getMatrizId());
-        coordinatesOutOfMatrix(droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO), matrix);
-        coordinatesBusy(droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO), matrix);
+        Drone drone = droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO);
+        coordinatesOutOfMatrix(drone, matrix);
+        coordinatesBusy(drone, matrix);
 
-        Drone updatableDrone = droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO);
-        updatableDrone.setId(id);
-        updatableDrone.setMatriz(matrix);
-        Drone updatedDrone = this.saveDroneEntity(updatableDrone);
+        drone.setId(id);
+        drone.setMatriz(matrix);
+        Drone updatedDrone = this.saveDrone(drone);
         return droneMapper.mapDroneToDroneDTO(updatedDrone);
     }
 
@@ -81,7 +81,7 @@ public class DroneService {
     }
 
     public Matrix moveOneDrone(DroneMoveDTO droneMoveDTO) {
-        Drone drone = this.getDroneEntityById(droneMoveDTO.getId());
+        Drone drone = this.getDroneById(droneMoveDTO.getId());
         Matrix matrix = matrixService.getMatrixById(droneMoveDTO.getMatrizId());
         executeOrders(droneMoveDTO.getOrden(), drone, matrix);
         return matrix;
@@ -98,7 +98,7 @@ public class DroneService {
     }
 
     // Métodos auxiliares
-    private void coordinatesOutOfMatrix(Drone drone, Matrix matrix) {
+    public void coordinatesOutOfMatrix(Drone drone, Matrix matrix) {
         if (drone.getX() > matrix.getMax_x() || drone.getY() > matrix.getMax_y() ||
                 drone.getX() < 0 || drone.getY() < 0) {
             String errorMessage = "La coordenada excede el límite de la matriz";
@@ -107,7 +107,7 @@ public class DroneService {
         }
     }
 
-    private void coordinatesBusy(Drone droneMoving, Matrix matrix) {
+    public void coordinatesBusy(Drone droneMoving, Matrix matrix) {
         List<Drone> drones = matrix.getDrones();
         for (Drone drone : drones) {
             if (!Objects.equals(drone.getId(), droneMoving.getId()) && drone.getX() == droneMoving.getX() && drone.getY() == droneMoving.getY()) {
@@ -118,7 +118,7 @@ public class DroneService {
         }
     }
 
-    private void executeOrders(List<Movimientos> ordenes, Drone drone, Matrix matrix) {
+    public void executeOrders(List<Movimientos> ordenes, Drone drone, Matrix matrix) {
         for (Movimientos orden : ordenes) {
             switch (orden) {
                 case MOVE_FORWARD:
@@ -131,7 +131,7 @@ public class DroneService {
                     drone.setOrientacion(drone.getOrientacion().turnRight());
                     break;
             }
-            this.saveDroneEntity(drone);
+            this.saveDrone(drone);
         }
     }
 

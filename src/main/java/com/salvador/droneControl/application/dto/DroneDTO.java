@@ -6,12 +6,14 @@ import com.salvador.droneControl.infrastructure.validation.MatrixExists;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "DTO que representa un dron")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class DroneDTO {
 
     @Schema(description = "Id del dron", example = "1")
