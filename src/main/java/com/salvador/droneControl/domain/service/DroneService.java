@@ -99,7 +99,7 @@ public class DroneService {
 
     // Métodos auxiliares
     public void coordinatesOutOfMatrix(Drone drone, Matrix matrix) {
-        if (drone.getX() > matrix.getMax_x() || drone.getY() > matrix.getMax_y() ||
+        if (drone.getX() >= matrix.getMax_x() || drone.getY() >= matrix.getMax_y() ||
                 drone.getX() < 0 || drone.getY() < 0) {
             String errorMessage = "La coordenada excede el límite de la matriz";
             logger.error(errorMessage);

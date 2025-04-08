@@ -19,6 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 @RestController
 @RequestMapping("/matrix")
 @Tag(name = "Matrix Controller", description = "API para la gestión de matrices")
@@ -89,5 +92,15 @@ public class MatrixController {
         logger.info("Borrando matriz...");
         MatrixDTO deletedMatrix = matrixService.deleteMatrixById(id);
         return new ResponseEntity<>(deletedMatrix, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get every matrix's id", description = "Get every matrix and make a list with theirs id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Got every id"),
+    })
+    @GetMapping("/getAll")
+    public ResponseEntity<List<Long>> getMatricesIds() {
+        logger.info("Getting all matrices' ids");
+        return new ResponseEntity<>(matrixService.getMatricesIds(), HttpStatus.OK);
     }
 }

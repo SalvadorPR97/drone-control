@@ -13,6 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class MatrixService {
 
@@ -26,6 +30,14 @@ public class MatrixService {
         this.matrixMapper = matrixMapper;
     }
 
+    public List<Long> getMatricesIds() {
+        List<Matrix> matrices = matrixRepository.findAll();
+        List<Long> matricesIds = new ArrayList<>();
+        for (Matrix matrix : matrices) {
+            matricesIds.add(matrix.getId());
+        }
+        return matricesIds;
+    }
     public Matrix getMatrixById(long id) {
         return matrixRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Matriz no encontrada con id: " + id));
     }
@@ -61,7 +73,7 @@ public class MatrixService {
     }
 
     public void droneOutOfMatrix(Drone drone, Matrix matrix) {
-        if (drone.getX() > matrix.getMax_x() || drone.getY() > matrix.getMax_y()) {
+        if (drone.getX() >= matrix.getMax_x() || drone.getY() >= matrix.getMax_y()) {
             String errorMessage = "Quedarían drones fuera de la nueva matriz";
             logger.error(errorMessage);
             throw new WrongCoordinatesException(errorMessage);
