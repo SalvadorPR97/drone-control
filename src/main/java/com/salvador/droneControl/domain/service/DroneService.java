@@ -36,6 +36,10 @@ public class DroneService {
         return droneRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Drone no encontrado con id: " + id));
     }
 
+    public List<Drone> getAllDrones() {
+        return droneRepository.findAll();
+    }
+
     public Drone saveDrone(Drone drone) {
         return droneRepository.save(drone);
     }

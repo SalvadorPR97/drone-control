@@ -1,6 +1,7 @@
 package com.salvador.droneControl.infrastructure.controller;
 
 import com.salvador.droneControl.application.dto.*;
+import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.domain.model.Matrix;
 import com.salvador.droneControl.domain.service.DroneService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/drone")
@@ -118,5 +121,15 @@ public class DroneController {
         logger.info("Moviendo varios drones");
         Matrix matrix = droneService.moveManyInMatrix(datosEntradaDTO, id);
         return new ResponseEntity<>(matrix, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get every drone", description = "Get every drone and make a list with them.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Got every drone"),
+    })
+    @GetMapping("/getAll")
+    public ResponseEntity<List<Drone>> getMatricesIds() {
+        logger.info("Getting all drones");
+        return new ResponseEntity<>(droneService.getAllDrones(), HttpStatus.OK);
     }
 }
