@@ -125,10 +125,10 @@ public class DroneController {
 
     @Operation(summary = "Get every drone", description = "Get every drone and make a list with them.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Got every drone"),
+            @ApiResponse(responseCode = "200", description = "Got every drone with their matrix's id"),
     })
     @GetMapping("/getAll")
-    public ResponseEntity<List<Drone>> getMatricesIds() {
+    public ResponseEntity<List<DroneDTO>> getMatricesIds() {
         logger.info("Getting all drones");
         return new ResponseEntity<>(droneService.getAllDrones(), HttpStatus.OK);
     }

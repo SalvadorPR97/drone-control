@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,8 +37,10 @@ public class DroneService {
         return droneRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Drone no encontrado con id: " + id));
     }
 
-    public List<Drone> getAllDrones() {
-        return droneRepository.findAll();
+    public List<DroneDTO> getAllDrones() {
+        List<DroneDTO> droneDTOList = new ArrayList<>();
+        droneRepository.findAll().forEach(drone -> droneDTOList.add(droneMapper.mapDroneToDroneDTO(drone)));
+        return droneDTOList;
     }
 
     public Drone saveDrone(Drone drone) {
