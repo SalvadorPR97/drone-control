@@ -1,7 +1,6 @@
 package com.salvador.droneControl.infrastructure.controller;
 
 import com.salvador.droneControl.application.dto.*;
-import com.salvador.droneControl.domain.model.Drone;
 import com.salvador.droneControl.domain.model.Matrix;
 import com.salvador.droneControl.domain.service.DroneService;
 import io.swagger.v3.oas.annotations.Operation;
