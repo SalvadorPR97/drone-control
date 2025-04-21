@@ -97,9 +97,12 @@ public class DroneController {
     }
 
     @Operation(summary = "Mover un dron")
-    @ApiResponse(responseCode = "200", description = "Dron movido correctamente",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(example = "{\"message\": \"Error encontrado\"}")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dron movido correctamente"),
+            @ApiResponse(responseCode = "404", description = "Dron no movido",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\": \"Error encontrado\"}")))
+    })
     @PostMapping("/move")
     public ResponseEntity<Matrix> moveOne(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para mover un dron")
                                           @RequestBody @Valid DroneMoveDTO droneMoveDTO) {
