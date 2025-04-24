@@ -71,11 +71,11 @@ public class DroneService {
     public DroneDTO updateDrone(DroneNoIdDTO droneNoIdDTO, long id) {
         Matrix matrix = matrixService.getMatrixById(droneNoIdDTO.getMatrizId());
         Drone drone = droneMapper.mapDroneNoIdDTOToDrone(droneNoIdDTO);
+        drone.setId(id);
+        drone.setMatriz(matrix);
         coordinatesOutOfMatrix(drone, matrix);
         coordinatesBusy(drone, matrix);
 
-        drone.setId(id);
-        drone.setMatriz(matrix);
         Drone updatedDrone = this.saveDrone(drone);
         return droneMapper.mapDroneToDroneDTO(updatedDrone);
     }

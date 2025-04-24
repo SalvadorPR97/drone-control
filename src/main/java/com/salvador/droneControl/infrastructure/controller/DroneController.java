@@ -58,7 +58,7 @@ public class DroneController {
     @PutMapping("/update/{id}")
     public ResponseEntity<DroneDTO> updateDrone(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos para actualizar el dron")
                                                 @RequestBody @Valid DroneNoIdDTO droneNoIdDTO,
-                                                @Parameter(description = "ID de la matriz a actualizar", example = "1")
+                                                @Parameter(description = "ID del dron a actualizar", example = "1")
                                                 @PathVariable Long id) {
         logger.info("Actualizando dron");
         DroneDTO updatedDroneDTO = droneService.updateDrone(droneNoIdDTO, id);
